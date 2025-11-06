@@ -178,7 +178,7 @@ class Equipment:
         ))
 
 
-class Acivity:
+class Activity:
     @staticmethod
     def get_all_activity():
         sql = ''
