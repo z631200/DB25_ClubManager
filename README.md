@@ -1,9 +1,20 @@
+# 活動管理系統
+## ERD
+![image](image/project_erd.png)
+
+## 目標資料庫綱要
+![image](image/project_schema.png)
+
+
 # 中山網路書店
 
 [![GitHub release](https://img.shields.io/github/release/Text-Analytics-and-Retrieval/db_class2023)](https://github.com/Text-Analytics-and-Retrieval/db_class2023/releases/latest)
 [![GitHub license](https://img.shields.io/github/license/Text-Analytics-and-Retrieval/db_class2023)](https://github.com/Text-Analytics-and-Retrieval/db_class2023/main/LICENSE)
 
 一套使用Flask開發的網路書店系統，後端使用Postgres資料庫
+
+## 原始資料綱要
+![image](image/db25_schema.png)
 
 ## 原始架構
 
