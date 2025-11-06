@@ -7,11 +7,11 @@
 
 ## 原始架構
 
-「 static 」：存圖檔和資料格式（ CSS ）檔
-「 templates 」：存登入和註冊的 html 檔
-「 api 」：存登入的控制程式 api.py 和資料庫存取程式 sql.py
-「 bookstore 」 ：存一般使用者功能的控制程式和相關的 html 檔
-「 backstage 」 ：存管理者功能的控制程式和相關的 html 檔
+- 「 static 」：存圖檔和資料格式（ CSS ）檔
+- 「 templates 」：存登入和註冊的 html 檔
+- 「 api 」：存登入的控制程式 api.py 和資料庫存取程式 sql.py
+- 「 bookstore 」 ：存一般使用者功能的控制程式和相關的 html 檔
+- 「 backstage 」 ：存管理者功能的控制程式和相關的 html 檔
 
 
 ## 功能
