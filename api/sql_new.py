@@ -91,22 +91,34 @@ class Student:
         sql = 'SELECT * FROM student'
         return DB.fetchall(sql, ('student',))
     
+    @staticmethod
     def get_student(uid):
-        sql = ''
-        return DB.fetchall(sql)
-    
-    def create_student(input_data):
-        sql = ''
-        DB.execute_input(sql, (
-            input_data['field1'],
-            input_data['field2'],
-            input_data['field3']
-        ))
-    
-    def delete_student(uid):
-        sql = ''
-        DB.execute_input(sql, (uid,))
+        sql = 'SELECT * FROM student WHERE sId = %s'
+        return DB.fetchall(sql, (uid,))
 
+
+    @staticmethod
+    def create_student(input_data):
+        sql = '''
+            INSERT INTO Student (sId, sName, gender, Grade, Department, isMember, lName)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+        '''
+        DB.execute_input(sql, (
+            input_data['sId'],          # 學號，例如 'S004'
+            input_data['sName'],        # 姓名，例如 '林美惠'
+            input_data['gender'],       # 性別，例如 '女'
+            input_data['grade'],        # 年級，例如 2
+            input_data['department'],   # 系所，例如 '企業管理系'
+            input_data['isMember'],     # 是否為社員 (True/False)
+            input_data['logistic']      # 所屬後勤組別，例如 '舞台組'
+        ))
+
+    @staticmethod
+    def delete_student(sId):
+        sql = 'DELETE FROM Student WHERE sId = %s'
+        DB.execute_input(sql, (sId,))
+
+    @staticmethod
     def edit_student(input_data):
         sql = ''
         DB.execute_input(sql, (

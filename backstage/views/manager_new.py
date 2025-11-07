@@ -27,22 +27,22 @@ def home():
 @manager_new.route('/studentManager', methods=['GET', 'POST'])
 def studentManager():
     if 'delete' in request.values:
-        pid = request.values.get('delete')
-        Student.delete_student(pid)
+        sId = request.values.get('delete')
+        Student.delete_student(sId)
 
     #     if 'delete' in request.values:
-    #         pid = request.values.get('delete')
-    #         data = Record.delete_check(pid)
+    #         sId = request.values.get('delete')
+    #         data = Record.delete_check(sId)
             
     #         if(data != None):
     #             flash('failed')
     #         else:
-    #             data = Product.get_product(pid)
-    #             Product.delete_product(pid)
+    #             data = Product.get_product(sId)
+    #             Product.delete_product(sId)
 
     elif 'edit' in request.values:
-        pid = request.values.get('edit')
-        return redirect(url_for('manager.edit_student', pid=pid))
+        sId = request.values.get('edit')
+        return redirect(url_for('manager.edit_student', sId=sId))
     
 
     student_data = student()
@@ -56,42 +56,50 @@ def student():
             '學號': i[0],
             '姓名': i[1],
             '性別': i[2],
-            '系所': i[3],
-            '年級': i[4],
-            '是否為成員': i[5]
+            '年級': i[3],
+            '系所': i[4],
+            '是否為成員': i[5],
+            '所屬後勤團隊': i[6]
         }
         # print(student)
         student_data.append(student)
     return student_data
 
 @manager_new.route('/add_student', methods=['GET', 'POST'])
-def add_student():
+def create_student():
     if request.method == 'POST':
         # note: not completed
-        pname = request.values.get('pname')
+        sId = request.values.get('sId')
+        sName = request.values.get('sName')
         gender = request.values.get('gender')
-        department = request.values.get('department')
         grade = request.values.get('grade')
+        department = request.values.get('department')
+        is_member = request.values.get('isMember')
+        logistic = request.values.get('logistic') or None
+
 
         # validation, can be extended
-        if pname is None:
-            flash('所有欄位都是必填的，請確認輸入內容。')
-            return redirect(url_for('manager.studentManager'))
-        if len(pname) < 1:
+        if not sId or not sName or not gender or not department:
+            flash('所有欄位都是必填的（除了後勤組別），請確認輸入內容。')
+            return redirect(url_for('manager_new.studentManager'))
+        if len(sName) < 1:
             flash('使用者名稱不可為空。')
-            return redirect(url_for('manager.studentManager'))
+            return redirect(url_for('manager_new.studentManager'))
 
-        Student.add_student(
+        Student.create_student(
             {
-            'pname' : pname,
-            'gender' : gender,
-            'department' : department,
-            'grade':grade
+                'sId': sId,
+                'sName': sName,
+                'gender': gender,
+                'grade': grade,
+                'department': department,
+                'isMember': is_member,
+                'logistic': logistic
             }
         )
 
-        return redirect(url_for('manager.studentManager'))
-    
+        return redirect(url_for('manager_new.studentManager'))
+
     return render_template('studentManager.html')
 
 @manager_new.route('/edit_student', methods=['GET', 'POST'])
@@ -103,7 +111,7 @@ def edit_student():
             'gender' : request.values.get('gender'),
             'department' : request.values.get('department'),
             'grade' : request.values.get('grade'),
-            'pid' : request.values.get('pid')
+            'sId' : request.values.get('sId')
             }
         )
         return redirect(url_for('manager.studentManager'))
@@ -112,15 +120,15 @@ def edit_student():
         return render_template('edit_student.html', data=student)
     
 def show_student_info():
-    pid = request.args['pid']
-    data = Student.get_student(pid)
+    sId = request.args['sId']
+    data = Student.get_student(sId)
     pname = data[1]
     gender = data[2]
     department = data[3]
     grade = data[4]
     
     student = {
-        '使用者編號': pid,
+        '使用者編號': sId,
         '使用者名稱': pname,
         '使用者性別': gender,
         '使用者系別': department,

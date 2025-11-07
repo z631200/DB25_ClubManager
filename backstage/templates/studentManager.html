@@ -58,7 +58,7 @@
     </button>
 </div>
 
-<form method="post" enctype=multipart/form-data action={{ url_for('manager_new.add_student') }}>
+<form method="post" enctype=multipart/form-data action={{ url_for('manager_new.create_student') }}>
     <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -68,38 +68,43 @@
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="inputStudentName" class="form-label">學生姓名</label>
-                        <input type="text" class="form-control" id="inputStudentName" name="pname" required>
+                        <label for="inputStudentID" class="form-label">學生學號</label>
+                        <input type="text" class="form-control" id="inputStudentID" name="sId" required>
                     </div>
                     <div class="mb-3">
-                        <label for="inputStudentID" class="form-label">學生學號</label>
-                        <input type="text" class="form-control" id="inputStudentID" name="student_id" required>
+                        <label for="inputStudentName" class="form-label">學生姓名</label>
+                        <input type="text" class="form-control" id="inputStudentName" name="sName" required>
                     </div>
                     <div class="mb-3">
                         <label for="inputStudentGender" class="form-label">學生性別</label>
                         <select id="inputStudentGender" class="form-select" name="gender" required>
                             <option selected disabled value="">請選擇性別</option>
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
-                            <option value="Other">Other</option>
+                            <option value="男">男</option>
+                            <option value="女">女</option>
+                            <option value="其他">其他</option>
                         </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="inputStudentGrade" class="form-label">學生年級</label>
+                        <input type="number" class="form-control" id="inputStudentGrade" name="grade" required>
                     </div>
                     <div class="mb-3">
                         <label for="inputStudentDepartment" class="form-label">學生系所</label>
                         <input type="text" class="form-control" id="inputStudentDepartment" name="department" required>
                     </div>
-                    <div class="mb-3">
-                        <label for="inputStudentCategory" class="form-label">學生年級</label>
-                        <input type="number" class="form-control" id="inputStudentCategory" name="category" required>
-                    </div>                    
+                   
                     <div class="mb-3">
                         <label for="inputIsMember" class="form-label">是否為成員</label>
-                        <select id="inputIsMember" class="form-select" name="is_member" required>
+                        <select id="inputIsMember" class="form-select" name="isMember" required>
                             <option selected disabled value="">請選擇是否為成員</option>
                             <option value="Yes">Yes</option>
                             <option value="No">No</option>
                         </select>
                     </div>
+                    <div class="mb-3">
+                        <label for="inputStudentLogistic" class="form-label">學生所屬後勤團隊</label>
+                        <input type="text" class="form-control" id="inputStudentLogistic" name="logistic">
+                    </div> 
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">取消</button>
@@ -124,6 +129,7 @@
             <th width="15%"><center>系所</center></th>
             <th width="5%"><center>年級</center></th>
             <th width="10%"><center>是否為成員</center></th>
+            <th width="15%"><center>所屬後勤團隊</center></th>
             <th colspan="2"><center>資料操作</center></th>
         </tr>
     </thead>
@@ -136,6 +142,7 @@
             <td><center>{{ i.系所 }}</center></td>
             <td><center>{{ i.年級 }}</center></td>
             <td><center>{{ i.是否為成員 }}</center></td>
+            <td><center>{{ i.所屬後勤團隊 }}</center></td>
             <td><center><button type="submit" value="{{i.學號}}" name="edit" class="btn btn-success">編輯學生</button></center></td>
             <td><center><button type="submit" value="{{i.學號}}" name="delete" onclick="return (confirm('你確定要刪除 \'{{ i.姓名 }}\' 嗎？'))" class="btn btn-danger">刪除學生</button></center></td>
         </tr>
