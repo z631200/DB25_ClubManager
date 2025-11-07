@@ -85,17 +85,17 @@ class DB:
             DB.release(connection)
 
 
-class Person:
+class Student:
     @staticmethod
-    def get_all_person():
+    def get_all_student():
         sql = ''
-        return DB.fetchall(sql, ('user',))
+        return DB.fetchall(sql, ('student',))
     
-    def get_person(uid):
+    def get_student(uid):
         sql = ''
         return DB.fetchall(sql)
     
-    def create_person(input_data):
+    def create_student(input_data):
         sql = ''
         DB.execute_input(sql, (
             input_data['field1'],
@@ -103,11 +103,11 @@ class Person:
             input_data['field3']
         ))
     
-    def delete_person(uid):
+    def delete_student(uid):
         sql = ''
         DB.execute_input(sql, (uid,))
 
-    def edit_person(input_data):
+    def edit_student(input_data):
         sql = ''
         DB.execute_input(sql, (
             input_data['field1'],

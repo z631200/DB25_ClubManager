@@ -12,7 +12,7 @@ from flask import current_app
 UPLOAD_FOLDER = 'static/product'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 
-manager_new = Blueprint('manager', __name__, template_folder='../templates')
+manager_new = Blueprint('manager_new', __name__, template_folder='../templates')
 
 def config():
     current_app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -21,14 +21,14 @@ def config():
 
 @manager_new.route('/', methods=['GET', 'POST'])
 def home():
-    return redirect(url_for('manager.productManager'))
+    return redirect(url_for('manager.studentManager'))
 
-# ================== Person Management =====================
-@manager_new.route('/personManager', methods=['GET', 'POST'])
-def personManager():
+# ================== Student Management =====================
+@manager_new.route('/studentManager', methods=['GET', 'POST'])
+def studentManager():
     if 'delete' in request.values:
         pid = request.values.get('delete')
-        Person.delete_person(pid)
+        Student.delete_student(pid)
 
     #     if 'delete' in request.values:
     #         pid = request.values.get('delete')
@@ -42,27 +42,27 @@ def personManager():
 
     elif 'edit' in request.values:
         pid = request.values.get('edit')
-        return redirect(url_for('manager.edit_person', pid=pid))
+        return redirect(url_for('manager.edit_student', pid=pid))
     
 
-    person_data = person()
-    return render_template('personManager.html', person_data = person_data, user=current_user.name)
+    student_data = student()
+    return render_template('studentManager.html', student_data = student_data, user=current_user.name)
 
-def person():
-    person_row = Person.get_all_person()
-    person_data = []
-    for i in person_row:
-        person = {
+def student():
+    student_row = Student.get_all_student()
+    student_data = []
+    for i in student_row:
+        student = {
             '使用者編號': i[0],
             '使用者名稱': i[1],
             '使用者角色': i[2],
             '使用者信箱': i[3]
         }
-        person_data.append(person)
-    return person_data
+        student_data.append(student)
+    return student_data
 
-@manager_new.route('/add_person', methods=['GET', 'POST'])
-def add_person():
+@manager_new.route('/add_student', methods=['GET', 'POST'])
+def add_student():
     if request.method == 'POST':
 
         # note: not completed
@@ -74,12 +74,12 @@ def add_person():
         # validation, can be extended
         if pname is None:
             flash('所有欄位都是必填的，請確認輸入內容。')
-            return redirect(url_for('manager.personManager'))
+            return redirect(url_for('manager.studentManager'))
         if len(pname) < 1:
             flash('使用者名稱不可為空。')
-            return redirect(url_for('manager.personManager'))
+            return redirect(url_for('manager.studentManager'))
 
-        Person.add_person(
+        Student.add_student(
             {
             'pname' : pname,
             'gender' : gender,
@@ -88,14 +88,14 @@ def add_person():
             }
         )
 
-        return redirect(url_for('manager.personManager'))
+        return redirect(url_for('manager.studentManager'))
     
-    return render_template('personManager.html')
+    return render_template('studentManager.html')
 
-@manager_new.route('/edit_person', methods=['GET', 'POST'])
-def edit_person():
+@manager_new.route('/edit_student', methods=['GET', 'POST'])
+def edit_student():
     if request.method == 'POST':
-        Person.update_person(
+        Student.update_student(
             {
             'pname' : request.values.get('pname'),
             'gender' : request.values.get('gender'),
@@ -104,27 +104,27 @@ def edit_person():
             'pid' : request.values.get('pid')
             }
         )
-        return redirect(url_for('manager.personManager'))
+        return redirect(url_for('manager.studentManager'))
     else:
-        person = show_person_info()
-        return render_template('edit_person.html', data=person)
+        student = show_student_info()
+        return render_template('edit_student.html', data=student)
     
-def show_person_info():
+def show_student_info():
     pid = request.args['pid']
-    data = Person.get_person(pid)
+    data = Student.get_student(pid)
     pname = data[1]
     gender = data[2]
     department = data[3]
     grade = data[4]
     
-    person = {
+    student = {
         '使用者編號': pid,
         '使用者名稱': pname,
         '使用者性別': gender,
         '使用者系別': department,
         '使用者年級': grade
     }
-    return person
+    return student
 
 # ================== Logistics Management =====================
 @manager_new.route('/logisticsManager', methods=['GET', 'POST'])
@@ -148,7 +148,7 @@ def logisticsManager():
         return redirect(url_for('manager.edit_logistics', logistics_name=logistics_name))
 
     Logistics_data = logistics()
-    return render_template('personManager.html', person_data = Logistics, user=current_user.name)
+    return render_template('studentManager.html', student_data = Logistics, user=current_user.name)
 
 def logistics():
     logistics_row = Logistics.get_all_logistics()
