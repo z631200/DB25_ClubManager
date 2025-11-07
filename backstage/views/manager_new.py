@@ -46,25 +46,27 @@ def studentManager():
     
 
     student_data = student()
-    return render_template('studentManager.html', student_data = student_data, user=current_user.name)
+    return render_template('studentManager.html', student_data = student_data)
 
 def student():
     student_row = Student.get_all_student()
     student_data = []
     for i in student_row:
         student = {
-            '使用者編號': i[0],
-            '使用者名稱': i[1],
-            '使用者角色': i[2],
-            '使用者信箱': i[3]
+            '學號': i[0],
+            '姓名': i[1],
+            '性別': i[2],
+            '系所': i[3],
+            '年級': i[4],
+            '是否為成員': i[5]
         }
+        # print(student)
         student_data.append(student)
     return student_data
 
 @manager_new.route('/add_student', methods=['GET', 'POST'])
 def add_student():
     if request.method == 'POST':
-
         # note: not completed
         pname = request.values.get('pname')
         gender = request.values.get('gender')
@@ -126,92 +128,82 @@ def show_student_info():
     }
     return student
 
-# ================== Logistics Management =====================
-@manager_new.route('/logisticsManager', methods=['GET', 'POST'])
-def logisticsManager():
+# ================== Logistic Management =====================
+@manager_new.route('/logisticManager', methods=['GET', 'POST'])
+def logisticManager():
     if 'delete' in request.values:
-        logistics_name = request.values.get('delete')
-        Logistics.delete_logistics(logistics_name)
-
-    #     if 'delete' in request.values:
-    #         pid = request.values.get('delete')
-    #         data = Record.delete_check(pid)
-            
-    #         if(data != None):
-    #             flash('failed')
-    #         else:
-    #             data = Product.get_product(pid)
-    #             Product.delete_product(pid)
+        logistic_name = request.values.get('delete')
+        Logistic.delete_logistic(logistic_name)
 
     elif 'edit' in request.values:
-        logistics_name = request.values.get('edit')
-        return redirect(url_for('manager.edit_logistics', logistics_name=logistics_name))
+        logistic_name = request.values.get('edit')
+        return redirect(url_for('manager.edit_logistic', logistic_name=logistic_name))
 
-    Logistics_data = logistics()
-    return render_template('studentManager.html', student_data = Logistics, user=current_user.name)
+    Logistic_data = logistic()
+    return render_template('logisticManager.html', logistic_data = Logistic_data)
 
-def logistics():
-    logistics_row = Logistics.get_all_logistics()
-    logistics_data = []
-    for i in logistics_row:
-        logistics = {
+def logistic():
+    logistic_row = Logistic.get_all_logistic()
+    logistic_data = []
+    for i in logistic_row:
+        logistic = {
             '後勤名稱': i[0],
             '工作內容': i[1]
         }
-        logistics_data.append(logistics)
-    return logistics_data
+        logistic_data.append(logistic)
+    return logistic_data
 
-@manager_new.route('/add_logistics', methods=['GET', 'POST'])
-def add_logistics():
+@manager_new.route('/add_logistic', methods=['GET', 'POST'])
+def add_logistic():
     if request.method == 'POST':
 
         # note: not completed
-        logistics_name = request.values.get('logistics_name')
-        logistics_description = request.values.get('description')
+        logistic_name = request.values.get('logistic_name')
+        logistic_description = request.values.get('description')
 
         # validation, can be extended
-        if logistics_name is None:
+        if logistic_name is None:
             flash('所有欄位都是必填的，請確認輸入內容。')
-            return redirect(url_for('manager.logisticsManager'))
-        if len(logistics_name) < 1:
+            return redirect(url_for('manager.logisticManager'))
+        if len(logistic_name) < 1:
             flash('後勤名稱不可為空。')
-            return redirect(url_for('manager.logisticsManager'))
+            return redirect(url_for('manager.logisticManager'))
 
-        Logistics.add_logistics(
+        Logistic.add_logistic(
             {
-            'logistics_name' : logistics_name,
-            'logistics_description' : logistics_description
+            'logistic_name' : logistic_name,
+            'logistic_description' : logistic_description
             }
         )
 
-        return redirect(url_for('manager.logisticsManager'))
+        return redirect(url_for('manager.logisticManager'))
     
-    return render_template('logisticsManager.html')
+    return render_template('logisticManager.html')
 
-@manager_new.route('/edit_logistics', methods=['GET', 'POST'])
-def edit_logistics():
+@manager_new.route('/edit_logistic', methods=['GET', 'POST'])
+def edit_logistic():
     if request.method == 'POST':
-        Logistics.update_logistics(
+        Logistic.update_logistic(
             {
-            'logistics_name' : request.values.get('logistics_name'),
-            'logistics_description' : request.values.get('description'),
+            'logistic_name' : request.values.get('logistic_name'),
+            'logistic_description' : request.values.get('description'),
             }
         )
-        return redirect(url_for('manager.logisticsManager'))
+        return redirect(url_for('manager.logisticManager'))
     else:
-        logistics = show_logistics_info()
-        return render_template('edit_logistics.html', data=logistics)
+        logistic = show_logistic_info()
+        return render_template('edit_logistic.html', data=logistic)
 
-def show_logistics_info():
-    logistics_name = request.args['logistics_name']
-    data = Logistics.get_logistics(logistics_name)
-    logistics_description = data[1]
+def show_logistic_info():
+    logistic_name = request.args['logistic_name']
+    data = Logistic.get_logistic(logistic_name)
+    logistic_description = data[1]
     
-    logistics = {
-        '後勤名稱': logistics_name,
-        '工作內容': logistics_description
+    logistic = {
+        '後勤名稱': logistic_name,
+        '工作內容': logistic_description
     }
-    return logistics
+    return logistic
 
 # ================== Equipment Management =====================
 @manager_new.route('/equipmentManager', methods=['GET', 'POST'])
@@ -225,7 +217,7 @@ def equipmentManager():
         return redirect(url_for('manager.edit_equipment', equipment_id=equipment_id))
 
     equipment_data = equipment()
-    return render_template('equipmentManager.html', equipment_data = equipment_data, user=current_user.name)
+    return render_template('equipmentManager.html', equipment_data = equipment_data)
 
 def equipment():
     equipment_row = Equipment.get_all_equipment()
@@ -302,7 +294,7 @@ def show_equipment_info():
 
 # ================== Activity Management =====================
 @manager_new.route('/activityManager', methods=['GET', 'POST'])
-def acitvityManager():
+def activityManager():
     if 'delete' in request.values:
         activity_id = request.values.get('delete')
         Activity.delete_activity(activity_id)
