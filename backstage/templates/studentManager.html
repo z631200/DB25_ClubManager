@@ -3,7 +3,7 @@
 {{ super() }}
 {% endblock head %}
 
-{% block title %} 商品管理 {% endblock title %}
+{% block title %} 學生管理 {% endblock title %}
 
 {% block content %}
 
@@ -90,7 +90,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="inputStudentCategory" class="form-label">學生年級</label>
-                        <input type="int" class="form-control" id="inputStudentCategory" name="category" required>
+                        <input type="number" class="form-control" id="inputStudentCategory" name="category" required>
                     </div>                    
                     <div class="mb-3">
                         <label for="inputIsMember" class="form-label">是否為成員</label>

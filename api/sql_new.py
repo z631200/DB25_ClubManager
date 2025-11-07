@@ -150,7 +150,7 @@ class Logistic:
 class Equipment:
     @staticmethod
     def get_all_equipment():
-        sql = ''
+        sql = 'SELECT * FROM equipment'
         return DB.fetchall(sql)
     
     def get_equipment(eid):
@@ -181,7 +181,7 @@ class Equipment:
 class Activity:
     @staticmethod
     def get_all_activity():
-        sql = ''
+        sql = 'SELECT * FROM activity'
         return DB.fetchall(sql)
     
     def get_activity(aid):
@@ -215,6 +215,10 @@ class Program:
         sql = ''
         return DB.fetchall(sql)
     
+    def get_activity_program(aSeq):
+        sql = 'SELECT * FROM program WHERE aSeq = %s'
+        return DB.fetchall(sql, (aSeq,))
+    
     def get_program(pid):
         sql = ''
         return DB.fetchall(sql)
@@ -234,9 +238,10 @@ class Program:
     def edit_program(input_data):
         sql = ''
         DB.execute_input(sql, (
-            input_data['field1'],
-            input_data['field2'],
-            input_data['pid']
+            input_data['aSeq'],
+            input_data['program_id'],
+            input_data['old_program_name'],
+            input_data['old_program_time'],
         ))
 
 

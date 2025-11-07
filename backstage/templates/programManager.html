@@ -3,7 +3,7 @@
 {{ super() }}
 {% endblock head %}
 
-{% block title %} 後勤管理 {% endblock title %}
+{% block title %} 節目管理 {% endblock title %}
 
 {% block content %}
 
@@ -36,7 +36,7 @@
     $(document).ready(function(){
         $("#keyword").on("keyup", function() {
             var value = $(this).val().toLowerCase();
-            $("#logistic tr").filter(function() {
+            $("#program tr").filter(function() {
             $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
             });
         });
@@ -51,29 +51,33 @@
             <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
           </svg>
         </span>
-        <input class="form-control me-2" id="keyword" placeholder="搜尋後勤" aria-label="Search">
+        <input class="form-control me-2" id="keyword" placeholder="搜尋節目" aria-label="Search">
     </div>
     <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-        新增後勤
+        新增節目
     </button>
 </div>
 
-<form method="post" enctype=multipart/form-data action={{ url_for('manager_new.add_logistic') }}>
+<form method="post" enctype=multipart/form-data action={{ url_for('manager_new.add_program') }}>
     <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="staticBackdropLabel">新增後勤</h5>
+                    <h5 class="modal-title" id="staticBackdropLabel">新增節目</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="inputLogisticName" class="form-label">後勤名稱</label>
-                        <input type="text" class="form-control" id="inputLogisticName" name="lName" required>
+                        <label for="inputProgramName" class="form-label">節目名稱</label>
+                        <input type="text" class="form-control" id="inputProgramName" name="program_name" required>
                     </div>
                     <div class="mb-3">
-                        <label for="inputLogisticJob" class="form-label">工作內容</label>
-                        <input type="text" class="form-control" id="inputLogisticJob" name="Job_Description" required>
+                        <label for="inputProgramDate" class="form-label">節目日期</label>
+                        <input type="date" class="form-control" id="inputProgramDate" name="program_date" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="inputProgramLocation" class="form-label">節目地點</label>
+                        <input type="text" class="form-control" id="inputProgramLocation" name="program_location" required>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -89,28 +93,42 @@
 
 <div class="container-xxl">
 
-<form method='post' action={{ url_for('manager_new.logisticManager') }} >
+<form method="post" action="{{ url_for('manager_new.programManager', aSeq=aSeq) }}">
 <table id="manager_new" class="table table-bordered">
-    <thead>
-        <tr>
-            <th width="20%"><center>後勤名稱</center></th>
-            <th width="40%"><center>工作內容</center></th>
-            <th colspan="2"><center>資料操作</center></th>
-        </tr>
-    </thead>
-    <tbody id="logistic">
-    {% for i in logistic_data %}
-        <tr>
-            <td><center>{{ i.後勤名稱 }}</center></td>
-            <td><center>{{ i.工作內容 }}</center></td>
-            <td><center><button type="submit" value="{{i.後勤名稱}}" name="edit" class="btn btn-success">編輯後勤</button></center></td>
-            <td><center><button type="submit" value="{{i.後勤名稱}}" name="delete" onclick="return (confirm('你確定要刪除 \'{{ i.後勤名稱 }}\' 嗎？'))" class="btn btn-danger">刪除後勤</button></center></td>
-        </tr>
-    {% endfor %}
-    </tbody>
-    
+  <thead>
+    <tr>
+      <th width="10%"><center>活動序號</center></th>
+      <th width="15%"><center>節目時間</center></th>
+      <th width="25%"><center>曲目</center></th>
+      <th colspan="2"><center>資料操作</center></th>
+    </tr>
+  </thead>
+  <tbody id="program">
+  {% for i in program_data %}
+    <tr>
+      <td><center>{{ i.活動序號 }}</center></td>
+      <td><center>{{ i.節目時間 }}</center></td>
+      <td><center>{{ i.曲目 }}</center></td>
+      <td>
+        <center>
+          <button type="submit" name="edit_program" value="{{ i.活動序號 }}|{{ i.節目時間 }}" class="btn btn-success">
+            編輯節目
+          </button>
+        </center>
+      </td>
+      <td>
+        <center>
+          <button type="submit" name="delete" value="{{ i.活動序號 }}|{{ i.節目時間 }}"
+                  onclick="return confirm('你確定要刪除 {{ i.曲目 }} 嗎？')"
+                  class="btn btn-danger">刪除節目</button>
+        </center>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
 </table>
 </form>
+
 
 
 </div>
@@ -122,3 +140,4 @@
 </script>
 
 {% endblock content %}
+                   

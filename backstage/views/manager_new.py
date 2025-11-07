@@ -224,10 +224,12 @@ def equipment():
     equipment_data = []
     for i in equipment_row:
         equipment = {
-            '設備編號': i[0],
-            '設備名稱': i[1],
-            '設備狀態': i[2],
-            '設備描述': i[3]
+            '編號': i[0],
+            '器材名稱': i[1],
+            '位置': i[2],
+            '數量': i[3],
+            '備註': i[4],
+            '組別名稱': i[5]
         }
         equipment_data.append(equipment)
     return equipment_data
@@ -296,24 +298,29 @@ def show_equipment_info():
 @manager_new.route('/activityManager', methods=['GET', 'POST'])
 def activityManager():
     if 'delete' in request.values:
-        activity_id = request.values.get('delete')
-        Activity.delete_activity(activity_id)
+        aSeq = request.values.get('delete')
+        Activity.delete_activity(aSeq)
+
     elif 'edit' in request.values:
-        activity_id = request.values.get('edit')
-        return redirect(url_for('manager.edit_activity', activity_id=activity_id))
+        aSeq = request.values.get('edit')
+        return redirect(url_for('manager_new.edit_activity', aSeq=aSeq))
+
+    elif 'view' in request.values:
+        aSeq = request.values.get('view')
+        return redirect(url_for('manager_new.programManager', aSeq=aSeq))
 
     activity_data = activity()
-    return render_template('activityManager.html')
+    return render_template('activityManager.html', activity_data = activity_data)
 
 def activity():
     activity_row = Activity.get_all_activity()
     activity_data = []
     for i in activity_row:
         activity = {
-            '活動編號': i[0],
+            '序號': i[0],
             '活動名稱': i[1],
-            '活動日期': i[2],
-            '活動描述': i[3]
+            '日期': i[2],
+            '地點': i[3]
         }
         activity_data.append(activity)
     return activity_data
@@ -350,12 +357,13 @@ def add_activity():
 @manager_new.route('/edit_activity', methods=['GET', 'POST'])
 def edit_activity():
     if request.method == 'POST':
+        print(f"\n\n\n\n\n\n")
         Activity.update_activity(
             {
             'activity_name' : request.values.get('activity_name'),
             'activity_date' : request.values.get('activity_date'),
             'activity_description' : request.values.get('description'),
-            'activity_id' : request.values.get('activity_id')
+            'aSeq' : request.values.get('aSeq')
             }
         )
         return redirect(url_for('manager.activityManager'))
@@ -364,14 +372,14 @@ def edit_activity():
         return render_template('edit_activity.html', data=activity)
 
 def show_activity_info():
-    activity_id = request.args['activity_id']
-    data = Activity.get_activity(activity_id)
+    aSeq = request.args['aSeq']
+    data = Activity.get_activity(aSeq)
     activity_name = data[1]
     activity_date = data[2]
     activity_description = data[3]
     
     activity = {
-        '活動編號': activity_id,
+        '活動編號': aSeq,
         '活動名稱': activity_name,
         '活動日期': activity_date,
         '活動描述': activity_description
@@ -381,30 +389,45 @@ def show_activity_info():
 # =================== Program Management =====================
 @manager_new.route('/programManager', methods=['GET', 'POST'])
 def programManager():
-    if 'delete' in request.values:
-        program_id = request.values.get('delete')
-        Program.delete_program(program_id)
-    elif 'edit' in request.values:
-        program_id = request.values.get('edit')
-        return redirect(url_for('manager.edit_program', program_id=program_id))
-   
-    program_data = program()
-    return render_template('programManager.html')
+    aSeq = request.values.get('aSeq')
+    # print(f"Debug: aSeq = {aSeq}")
+    # print(f"Request values: {request.values}")
+    if not aSeq:
+        print("活動編號缺失，無法顯示節目列表。")
+        flash('活動編號缺失，無法顯示節目列表。')
+        return redirect(url_for('manager_new.activityManager'))
+    
 
-def program():
-    program_row = Program.get_all_program()
+    if 'delete' in request.values:
+        print("Delete program")
+        composite_key  = request.values.get('delete')
+        aSeq, program_time = composite_key.split('|', 1)
+        Program.delete_program(aSeq, program_time)
+        return redirect(url_for('manager_new.programManager', aSeq=aSeq))
+    elif 'edit_program' in request.values:
+        print("Edit program")
+        composite_key = request.values.get('edit_program')
+        aSeq, program_time = composite_key.split('|', 1)
+
+        return redirect(url_for('manager_new.edit_program', aSeq=aSeq, program_time=program_time))
+
+   
+    program_data = program(aSeq)
+    return render_template('programManager.html', program_data=program_data, aSeq=aSeq)
+
+def program(aSeq):
+    program_row = Program.get_activity_program(aSeq)
     program_data = []
     for i in program_row:
         program = {
-            '節目編號': i[0],
-            '節目名稱': i[1],
-            '節目主持人': i[2],
-            '節目時間': i[3]
+            '活動序號': i[0],
+            '節目時間': i[1],
+            '曲目': i[2]
         }
         program_data.append(program)
     return program_data
 
-@manager_new.route('/add_program', methods=['GET', 'POST'])
+@manager_new.route('/add_program', methods=['POST'])
 def add_program():
     if request.method == 'POST':
 
@@ -429,13 +452,14 @@ def add_program():
             }
         )
 
-        return redirect(url_for('manager.programManager'))
+        return redirect(url_for('manager_new.programManager'))
     
     return render_template('programManager.html')
 
 @manager_new.route('/edit_program', methods=['GET', 'POST'])
 def edit_program():
     if request.method == 'POST':
+        aSeq = request.values.get('aSeq')
         Program.update_program(
             {
             'program_name' : request.values.get('program_name'),
@@ -444,7 +468,7 @@ def edit_program():
             'program_id' : request.values.get('program_id')
             }
         )
-        return redirect(url_for('manager.programManager'))
+        return redirect(url_for('manager_new.programManager', aSeq=aSeq))
     else:
         program = show_program_info()
         return render_template('edit_program.html', data=program)

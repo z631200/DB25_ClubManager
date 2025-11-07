@@ -3,7 +3,7 @@
 {{ super() }}
 {% endblock head %}
 
-{% block title %} 後勤管理 {% endblock title %}
+{% block title %} 活動管理 {% endblock title %}
 
 {% block content %}
 
@@ -36,7 +36,7 @@
     $(document).ready(function(){
         $("#keyword").on("keyup", function() {
             var value = $(this).val().toLowerCase();
-            $("#logistic tr").filter(function() {
+            $("#activity tr").filter(function() {
             $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
             });
         });
@@ -51,29 +51,33 @@
             <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
           </svg>
         </span>
-        <input class="form-control me-2" id="keyword" placeholder="搜尋後勤" aria-label="Search">
+        <input class="form-control me-2" id="keyword" placeholder="搜尋活動" aria-label="Search">
     </div>
     <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-        新增後勤
+        新增活動
     </button>
 </div>
 
-<form method="post" enctype=multipart/form-data action={{ url_for('manager_new.add_logistic') }}>
+<form method="post" enctype=multipart/form-data action={{ url_for('manager_new.add_activity') }}>
     <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="staticBackdropLabel">新增後勤</h5>
+                    <h5 class="modal-title" id="staticBackdropLabel">新增活動</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="inputLogisticName" class="form-label">後勤名稱</label>
-                        <input type="text" class="form-control" id="inputLogisticName" name="lName" required>
+                        <label for="inputActivityName" class="form-label">活動名稱</label>
+                        <input type="text" class="form-control" id="inputActivityName" name="activity_name" required>
                     </div>
                     <div class="mb-3">
-                        <label for="inputLogisticJob" class="form-label">工作內容</label>
-                        <input type="text" class="form-control" id="inputLogisticJob" name="Job_Description" required>
+                        <label for="inputActivityDate" class="form-label">活動日期</label>
+                        <input type="date" class="form-control" id="inputActivityDate" name="activity_date" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="inputActivityLocation" class="form-label">活動地點</label>
+                        <input type="text" class="form-control" id="inputActivityLocation" name="activity_location" required>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -89,26 +93,31 @@
 
 <div class="container-xxl">
 
-<form method='post' action={{ url_for('manager_new.logisticManager') }} >
+<form method='post' action={{ url_for('manager_new.activityManager') }} >
 <table id="manager_new" class="table table-bordered">
     <thead>
         <tr>
-            <th width="20%"><center>後勤名稱</center></th>
-            <th width="40%"><center>工作內容</center></th>
-            <th colspan="2"><center>資料操作</center></th>
+            <th width="10%"><center>序號</center></th>
+            <th width="15%"><center>活動名稱</center></th>
+            <th width="15%"><center>日期</center></th>
+            <th width="15%"><center>地點</center></th>
+            <th colspan="3"><center>資料操作</center></th>
         </tr>
     </thead>
-    <tbody id="logistic">
-    {% for i in logistic_data %}
+    <tbody id="activity">
+    {% for i in activity_data %}
         <tr>
-            <td><center>{{ i.後勤名稱 }}</center></td>
-            <td><center>{{ i.工作內容 }}</center></td>
-            <td><center><button type="submit" value="{{i.後勤名稱}}" name="edit" class="btn btn-success">編輯後勤</button></center></td>
-            <td><center><button type="submit" value="{{i.後勤名稱}}" name="delete" onclick="return (confirm('你確定要刪除 \'{{ i.後勤名稱 }}\' 嗎？'))" class="btn btn-danger">刪除後勤</button></center></td>
+            <td><center>{{ i.序號 }}</center></td>
+            <td><center>{{ i.活動名稱 }}</center></td>
+            <td><center>{{ i.日期 }}</center></td>
+            <td><center>{{ i.地點 }}</center></td>
+            <td><center><button type="submit" value="{{i.序號}}" name="edit" class="btn btn-success">編輯活動</button></center></td>
+            <td><center><button type="submit" value="{{i.序號}}" name="delete" onclick="return (confirm('你確定要刪除 \'{{ i.活動名稱 }}\' 嗎？'))" class="btn btn-danger">刪除活動</button></center></td>
+            <td><center><button type="submit" value="{{i.序號}}" name="view" class="btn btn-info">查看節目</button></center></td>
         </tr>
     {% endfor %}
     </tbody>
-    
+
 </table>
 </form>
 
@@ -122,3 +131,4 @@
 </script>
 
 {% endblock content %}
+                   
