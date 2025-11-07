@@ -26,7 +26,7 @@ app.register_blueprint(api, url_prefix='/')
 app.register_blueprint(analysis, url_prefix='/backstage')
 app.register_blueprint(manager, url_prefix='/backstage')
 # noted change
-app.register_blueprint(manager_new, url_prefix='/backstage')
+app.register_blueprint(manager_new, url_prefix='/backstage_new')
 
 
 login_manager.init_app(app)

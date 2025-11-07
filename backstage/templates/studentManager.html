@@ -1,0 +1,148 @@
+{% extends "backstage_new.html" %}
+{% block head %}
+{{ super() }}
+{% endblock head %}
+
+{% block title %} 商品管理 {% endblock title %}
+
+{% block content %}
+
+{% with messages = get_flashed_messages() %}
+{% if messages[0] == 'No permission' %}
+  
+<script language="javascript">
+
+  alert('您沒有使用者的權限喔！');
+
+</script>
+
+
+{% endif %}
+{% endwith %}
+
+{% with messages = get_flashed_messages() %}
+{% if messages[0] == 'failed' %}
+  
+<script language="javascript">
+
+  alert('有使用者有使用到這筆資料，所以不能刪除');
+
+</script>
+
+{% endif %}
+{% endwith %}
+
+<script>
+    $(document).ready(function(){
+        $("#keyword").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $("#product tr").filter(function() {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    });
+</script>
+&nbsp;
+&nbsp;
+<div class="d-flex justify-content-between container-xxl">
+    <div class="d-flex col-sm-4">
+        <span class="input-group-text" id="basic-addon1">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+          </svg>
+        </span>
+        <input class="form-control me-2" id="keyword" placeholder="搜尋學生" aria-label="Search">
+    </div>
+    <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+        新增學生
+    </button>
+</div>
+
+<form method="post" enctype=multipart/form-data action={{ url_for('manager_new.add') }}>
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">新增學生</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="inputStudentName" class="form-label">學生姓名</label>
+                        <input type="text" class="form-control" id="inputStudentName" name="pname" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="inputStudentID" class="form-label">學生學號</label>
+                        <input type="text" class="form-control" id="inputStudentID" name="student_id" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="inputStudentGender" class="form-label">學生性別</label>
+                        <input type="text" class="form-control" id="inputStudentGender" name="gender" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="inputStudentDepartment" class="form-label">學生系所</label>
+                        <input type="text" class="form-control" id="inputStudentDepartment" name="department" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="inputStudentCategory" class="form-label">學生年級</label>
+                        <input type="text" class="form-control" id="inputStudentCategory" name="category" required>
+                    </div>                    
+                    <div class="mb-3">
+                        <label for="inputIsMember" class="form-label">是否為成員</label>
+                        <textarea class="text" id="inputIsMember" name="is_member" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-success">確定新增</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<br/>
+
+<div class="container-xxl">
+
+<form method='post' action={{ url_for('manager.studentManager') }} >
+<table id="manager_new" class="table table-bordered">
+    <thead>
+        <tr>
+            <th width="10%"><center>學號</center></th>
+            <th width="5%"><center>姓名</center></th>
+            <th width="5%"><center>性別</center></th>
+            <th width="10%"><center>系所</center></th>
+            <th width="5%"><center>年級</center></th>
+            <th width="5%"><center>是否為成員</center></th>
+            <th colspan="2"><center>資料操作</center></th>
+        </tr>
+    </thead>
+    <tbody id="student">
+    {% for i in student_data %}
+        <tr>
+            <td><center>{{ i.學號 }}</center></td>
+            <td><center>{{ i.姓名 }}</center></td>
+            <td><center>{{ i.性別 }}</center></td>
+            <td><center>{{ i.系所 }}</center></td>
+            <td><center>{{ i.年級 }}</center></td>
+            <td><center>{{ i.是否為成員 }}</center></td>
+            <td><center><button type="submit" value="{{i.學號}}" name="edit" class="btn btn-success">編輯學生</button></center></td>
+            <td><center><button type="submit" value="{{i.學號}}" name="delete" onclick="return (confirm('你確定要刪除 \'{{ i.姓名 }}\' 嗎？'))" class="btn btn-danger">刪除學生</button></center></td>
+        </tr>
+    {% endfor %}
+    </tbody>
+    
+</table>
+</form>
+
+
+</div>
+
+<script>
+    function have_product(){
+      alert('有使用者有使用到這筆資料，所以不能刪除');
+    }
+</script>
+
+{% endblock content %}
