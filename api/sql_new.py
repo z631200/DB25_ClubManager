@@ -88,7 +88,7 @@ class DB:
 class Student:
     @staticmethod
     def get_all_student():
-        sql = ''
+        sql = 'SELECT * FROM student'
         return DB.fetchall(sql, ('student',))
     
     def get_student(uid):
@@ -116,17 +116,17 @@ class Student:
         ))
 
 
-class Logistics:
+class Logistic:
     @staticmethod
-    def get_all_logistics():
+    def get_all_logistic():
+        sql = 'SELECT * FROM logistic'
+        return DB.fetchall(sql)
+    
+    def get_logistic(lName):
         sql = ''
         return DB.fetchall(sql)
     
-    def get_logistics(lid):
-        sql = ''
-        return DB.fetchall(sql)
-    
-    def create_logistics(input_data):
+    def create_logistic(input_data):
         sql = ''
         DB.execute_input(sql, (
             input_data['field1'],
@@ -134,11 +134,11 @@ class Logistics:
             input_data['field3']
         ))
     
-    def delete_logistics(lid):
+    def delete_logistic(lid):
         sql = ''
         DB.execute_input(sql, (lid,))
 
-    def edit_logistics(input_data):
+    def edit_logistic(input_data):
         sql = ''
         DB.execute_input(sql, (
             input_data['field1'],
