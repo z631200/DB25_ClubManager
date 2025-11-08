@@ -92,9 +92,9 @@ class Student:
         return DB.fetchall(sql, ('student',))
     
     @staticmethod
-    def get_student(uid):
+    def get_student(sId):
         sql = 'SELECT * FROM student WHERE sId = %s'
-        return DB.fetchall(sql, (uid,))
+        return DB.fetchall(sql, (sId,))
 
 
     @staticmethod
@@ -148,23 +148,28 @@ class Logistic:
 
     @staticmethod
     def create_logistic(input_data):
-        sql = ''
+        sql = '''
+            INSERT INTO logistic (lName, Job_Desc) VALUES (%s, %s)
+        '''
         DB.execute_input(sql, (
-            input_data['field1'],
-            input_data['field2'],
-            input_data['field3']
+            input_data['lName'],
+            input_data['Job_Desc'],
         ))
     
-    def delete_logistic(lid):
-        sql = ''
-        DB.execute_input(sql, (lid,))
+    @staticmethod
+    def delete_logistic(lName):
+        sql = 'DELETE FROM logistic WHERE lName = %s'
+        DB.execute_input(sql, (lName,))
 
-    def edit_logistic(input_data):
-        sql = ''
+    @staticmethod
+    def update_logistic(input_data):
+        sql = '''
+            UPDATE logistic SET lName = %s, Job_Desc = %s WHERE lName = %s
+        '''
         DB.execute_input(sql, (
-            input_data['field1'],
-            input_data['field2'],
-            input_data['lid']
+            input_data['new_lName'],
+            input_data['Job_Desc'],
+            input_data['lName']
         ))
 
 

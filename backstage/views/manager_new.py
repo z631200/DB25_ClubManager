@@ -68,7 +68,7 @@ def student():
 @manager_new.route('/add_student', methods=['GET', 'POST'])
 def create_student():
     if request.method == 'POST':
-        # note: not completed
+
         sId = request.values.get('sId')
         sName = request.values.get('sName')
         gender = request.values.get('gender')
@@ -76,7 +76,6 @@ def create_student():
         department = request.values.get('department')
         is_member = request.values.get('isMember')
         logistic = request.values.get('logistic') or None
-
 
         # validation, can be extended
         if not sId or not sName or not gender or not department:
@@ -120,9 +119,6 @@ def edit_student():
     else:
         student = show_student_info()
         logistic_data = Logistic.get_all_logistic()
-
-        print(student)
-        print(logistic_data)
         return render_template('studentEditor.html', student=student, logistic_data=logistic_data)
     
 def show_student_info():
@@ -152,12 +148,12 @@ def show_student_info():
 @manager_new.route('/logisticManager', methods=['GET', 'POST'])
 def logisticManager():
     if 'delete' in request.values:
-        logistic_name = request.values.get('delete')
-        Logistic.delete_logistic(logistic_name)
+        lName = request.values.get('delete')
+        Logistic.delete_logistic(lName)
 
     elif 'edit' in request.values:
-        logistic_name = request.values.get('edit')
-        return redirect(url_for('manager_new.edit_logistic', logistic_name=logistic_name))
+        lName = request.values.get('edit')
+        return redirect(url_for('manager_new.edit_logistic', lName=lName))
 
     Logistic_data = logistic()
     return render_template('logisticManager.html', logistic_data = Logistic_data)
@@ -177,22 +173,21 @@ def logistic():
 def add_logistic():
     if request.method == 'POST':
 
-        # note: not completed
-        logistic_name = request.values.get('logistic_name')
-        logistic_description = request.values.get('description')
+        lName = request.values.get('lName')
+        Job_Desc = request.values.get('Job_Desc')
 
         # validation, can be extended
-        if logistic_name is None:
+        if lName is None:
             flash('所有欄位都是必填的，請確認輸入內容。')
             return redirect(url_for('manager_new.logisticManager'))
-        if len(logistic_name) < 1:
+        if len(lName) < 1:
             flash('後勤名稱不可為空。')
             return redirect(url_for('manager_new.logisticManager'))
 
-        Logistic.add_logistic(
+        Logistic.create_logistic(
             {
-            'logistic_name' : logistic_name,
-            'logistic_description' : logistic_description
+            'lName' : lName,
+            'Job_Desc' : Job_Desc
             }
         )
 
@@ -205,23 +200,26 @@ def edit_logistic():
     if request.method == 'POST':
         Logistic.update_logistic(
             {
-            'logistic_name' : request.values.get('logistic_name'),
-            'logistic_description' : request.values.get('description'),
+            'new_lName' : request.values.get('new_lName'),
+            'Job_Desc' : request.values.get('Job_Desc'),
+            'lName' : request.values.get('lName')
             }
         )
         return redirect(url_for('manager_new.logisticManager'))
     else:
         logistic = show_logistic_info()
-        return render_template('edit_logistic.html', data=logistic)
+        return render_template('logisticEditor.html', logistic=logistic)
 
 def show_logistic_info():
-    logistic_name = request.args['logistic_name']
-    data = Logistic.get_logistic(logistic_name)
-    logistic_description = data[1]
+    lName = request.args['lName']
+    record = Logistic.get_logistic(lName)
+    data = record[0]
+    lName = data[0]
+    Job_Desc = data[1]
     
     logistic = {
-        '後勤名稱': logistic_name,
-        '工作內容': logistic_description
+        'lName': lName,
+        'Job_Desc': Job_Desc
     }
     return logistic
 

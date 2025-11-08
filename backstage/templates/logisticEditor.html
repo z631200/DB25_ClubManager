@@ -1,0 +1,67 @@
+{% extends "backstage.html" %}
+{% block head %}
+{{ super() }}
+
+{% endblock head %}
+
+
+{% block title %}Logistic Editor{% endblock title %}
+
+{% block content%}
+
+{% with messages = get_flashed_messages() %}
+{% if messages[0] == 'No permission' %}
+  
+<script language="javascript">
+
+  alert('您沒有使用者的權限喔！');
+
+</script>
+
+{% endif %}
+{% endwith %}
+
+{% with messages = get_flashed_messages() %}
+{% if messages[0] == 'faild' %}
+  
+<script language="javascript">
+
+  alert('有使用者有使用到這筆資料，所以不能刪除');
+
+</script>
+
+{% endif %}
+{% endwith %}
+
+<br/><br/>
+<div class="container-xl">
+  <form method="post" enctype="multipart/form-data" action="{{ url_for('manager_new.edit_logistic') }}">
+    <table class="table table-bordered">
+      <tbody>
+        <tr>
+          <th>原始後勤名稱</th>
+          <td><input class="form-control" type="text" name="lName" value="{{ logistic.lName }}" readonly></td>
+        </tr>
+        <tr>
+          <th>後勤名稱</th>
+          <td><input class="form-control" type="text" name="new_lName" value="{{ logistic.lName }}"></td>
+        </tr>
+        <tr>
+          <th>工作內容</th>
+          <td><input class="form-control" type="text" name="Job_Desc" value="{{ logistic.Job_Desc }}"></td>
+      </tbody>
+    </table>
+
+    <center>
+      <div class="option">
+        <button class="btn btn-outline-success" type="submit">確定修改</button> 
+        <a href="{{ url_for('manager_new.logisticManager') }}">
+          <button class="btn btn-outline-danger" type="button">回後勤管理</button>
+        </a>
+      </div>
+    </center>
+  </form>
+</div>
+
+
+{% endblock content%}
