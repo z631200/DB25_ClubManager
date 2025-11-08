@@ -1,0 +1,88 @@
+{% extends "backstage.html" %}
+{% block head %}
+{{ super() }}
+
+{% endblock head %}
+
+
+{% block title %}Equipment Editor{% endblock title %}
+
+{% block content%}
+
+{% with messages = get_flashed_messages() %}
+{% if messages[0] == 'No permission' %}
+  
+<script language="javascript">
+
+  alert('您沒有使用者的權限喔！');
+
+</script>
+
+{% endif %}
+{% endwith %}
+
+{% with messages = get_flashed_messages() %}
+{% if messages[0] == 'faild' %}
+  
+<script language="javascript">
+
+  alert('有使用者有使用到這筆資料，所以不能刪除');
+
+</script>
+
+{% endif %}
+{% endwith %}
+
+<br/><br/>
+<div class="container-xl">
+  <form method="post" enctype="multipart/form-data" action="{{ url_for('manager_new.edit_equipment') }}">
+    <table class="table table-bordered">
+      <tbody>
+        <tr>
+          <th>編號</th>
+          <td><input class="form-control" type="text" name="eId" value="{{ equipment.eId }}" readonly></td>
+        </tr>
+        <tr>
+          <th>器材名稱</th>
+          <td><input class="form-control" type="text" name="eName" value="{{ equipment.eName }}"></td>
+        </tr>
+        <tr>
+          <th>位置</th>
+          <td><input class="form-control" type="text" name="eLocation" value="{{ equipment.eLocation }}"></td>
+        </tr>
+        <tr>
+          <th>數量</th>
+          <td><input class="form-control" type="text" name="Quantity" value="{{ equipment.Quantity }}"></td>
+        </tr>       
+        <tr>
+          <th>備註</th>
+          <td><input class="form-control" type="text" name="Note" value="{{ equipment.Note }}"></td>
+        </tr>                 
+        <tr>
+          <th>所屬後勤團隊</th>
+          <td>
+            <select class="form-control" name="lName">
+              {% for logistic in logistic_data %}
+                <option value="{{ logistic[0] }}" {% if equipment.lName == logistic[0] %}selected{% endif %}>
+                  {{ logistic[0] }}
+                </option>
+              {% endfor %}
+            </select>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <center>
+      <div class="option">
+        <button class="btn btn-outline-success" type="submit">確定修改</button> 
+        <a href="{{ url_for('manager_new.logisticManager') }}">
+          <button class="btn btn-outline-danger" type="button">回後勤管理</button>
+        </a>
+      </div>
+    </center>
+  </form>
+</div>
+
+
+{% endblock content%}

@@ -121,7 +121,7 @@ class Student:
     @staticmethod
     def update_student(input_data):
         sql = '''
-            UPDATE student SET sName = %s, gender = %s, grade = %s,
+            UPDATE Student SET sName = %s, gender = %s, grade = %s,
               department = %s, isMember = %s, lName = %s WHERE sId = %s
         '''
         DB.execute_input(sql, (
@@ -176,31 +176,47 @@ class Logistic:
 class Equipment:
     @staticmethod
     def get_all_equipment():
-        sql = 'SELECT * FROM equipment'
+        sql = 'SELECT * FROM Equipment'
         return DB.fetchall(sql)
     
-    def get_equipment(eid):
-        sql = ''
-        return DB.fetchall(sql)
-    
+    @staticmethod
+    def get_equipment(eId):
+        sql = 'SELECT * FROM Equipment WHERE eId = %s'
+        return DB.fetchall(sql, (eId,))
+
+    @staticmethod
     def create_equipment(input_data):
-        sql = ''
+        sql = '''
+            INSERT INTO Equipment (eId, eName, eLocation, Quantity, Note, lName)
+            VALUES (%s, %s, %s, %s, %s, %s)
+        '''
         DB.execute_input(sql, (
-            input_data['field1'],
-            input_data['field2'],
-            input_data['field3']
+            input_data['eId'],
+            input_data['eName'],
+            input_data['eLocation'],
+            input_data['Quantity'],
+            input_data['Note'],
+            input_data['lName']
         ))
     
-    def delete_equipment(eid):
-        sql = ''
-        DB.execute_input(sql, (eid,))
+    @staticmethod
+    def delete_equipment(eId):
+        sql = 'DELETE FROM Equipment WHERE eId = %s'
+        DB.execute_input(sql, (eId,))
 
-    def edit_equipment(input_data):
-        sql = ''
+    @staticmethod
+    def update_equipment(input_data):
+        sql = '''
+            UPDATE Equipment SET eName = %s, eLocation = %s, Quantity = %s,
+              Note = %s, lName = %s WHERE eId = %s
+        '''
         DB.execute_input(sql, (
-            input_data['field1'],
-            input_data['field2'],
-            input_data['eid']
+            input_data['eName'],
+            input_data['eLocation'],
+            input_data['Quantity'],
+            input_data['Note'],
+            input_data['lName'],
+            input_data['eId'],
         ))
 
 

@@ -68,24 +68,35 @@
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
+                        <label for="inputEquipmentId" class="form-label">器材編號</label>
+                        <input type="text" class="form-control" id="inputEquipmentId" name="eId" required>
+                    </div>
+                    <div class="mb-3">
                         <label for="inputEquipmentName" class="form-label">器材名稱</label>
-                        <input type="text" class="form-control" id="inputEquipmentName" name="equipment_name" required>
+                        <input type="text" class="form-control" id="inputEquipmentName" name="eName" required>
                     </div>
                     <div class="mb-3">
                         <label for="inputEquipmentLocation" class="form-label">位置</label>
-                        <input type="text" class="form-control" id="inputEquipmentLocation" name="equipment_location" required>
+                        <input type="text" class="form-control" id="inputEquipmentLocation" name="eLocation" >
                     </div>
                     <div class="mb-3">
                         <label for="inputEquipmentQuantity" class="form-label">器材數量</label>
-                        <input type="number" class="form-control" id="inputEquipmentQuantity" name="equipment_quantity" required>
+                        <input type="number" class="form-control" id="inputEquipmentQuantity" name="Quantity" required>
                     </div>
                     <div class="mb-3">
                         <label for="inputEquipmentRemarks" class="form-label">備註</label>
-                        <input type="text" class="form-control" id="inputEquipmentRemarks" name="equipment_remarks" required>
+                        <input type="text" class="form-control" id="inputEquipmentRemarks" name="Note" >
                     </div>
                     <div class="mb-3">
-                        <label for="inputEquipmentGroup" class="form-label">管理組別</label>
-                        <input type="text" class="form-control" id="inputEquipmentGroup" name="equipment_group" required>
+                        <label for="inputStudentLogistic" class="form-label">器材所屬後勤團隊</label>
+                        <select id="inputStudentLogistic" class="form-select" name="lName">
+                            <option selected disabled value="">請選擇後勤團隊</option>
+                            {% for logistic in logistic_data %}
+                                <option value="{{ logistic[0] }}" {% if equipment.lName == logistic[0] %}selected{% endif %}>
+                                    {{ logistic[0] }}
+                                </option>
+                            {% endfor %}
+                        </select>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -123,8 +134,8 @@
             <td><center>{{ i.位置 }}</center></td>
             <td><center>{{ i.備註 }}</center></td>
             <td><center>{{ i.組別名稱 }}</center></td>
-            <td><center><button type="submit" value="{{i.器材編號}}" name="edit" class="btn btn-success">編輯器材</button></center></td>
-            <td><center><button type="submit" value="{{i.器材編號}}" name="delete" onclick="return (confirm('你確定要刪除 \'{{ i.器材名稱 }}\' 嗎？'))" class="btn btn-danger">刪除器材</button></center></td>
+            <td><center><button type="submit" value="{{i.編號}}" name="edit" class="btn btn-success">編輯器材</button></center></td>
+            <td><center><button type="submit" value="{{i.編號}}" name="delete" onclick="return (confirm('你確定要刪除 \'{{ i.器材名稱 }}\' 嗎？'))" class="btn btn-danger">刪除器材</button></center></td>
         </tr>
     {% endfor %}
     </tbody>

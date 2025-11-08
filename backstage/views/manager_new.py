@@ -335,7 +335,7 @@ def edit_equipment():
     else:
         equipment = show_equipment_info()
         logistic_data = Logistic.get_all_logistic()
-        return render_template('edit_equipment.html', equipment=equipment, logistic_data=logistic_data)
+        return render_template('equipmentEditor.html', equipment=equipment, logistic_data=logistic_data)
 
 def show_equipment_info():
     eId = request.args['eId']
