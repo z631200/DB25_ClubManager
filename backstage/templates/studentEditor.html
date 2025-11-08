@@ -1,0 +1,127 @@
+{% extends "backstage.html" %}
+{% block head %}
+{{ super() }}
+<style>
+  main > .container {
+    padding: 60px 15px 0;
+  }
+
+  .bd-placeholder-img {
+    font-size: 1.125rem;
+    text-anchor: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+  }
+
+  @media (min-width: 768px) {
+    .bd-placeholder-img-lg {
+      font-size: 3.5rem;
+    }
+  }
+</style>
+{% endblock head %}
+
+
+{% block title %}Student Editor{% endblock title %}
+
+{% block content%}
+
+{% with messages = get_flashed_messages() %}
+{% if messages[0] == 'No permission' %}
+  
+<script language="javascript">
+
+  alert('您沒有使用者的權限喔！');
+
+</script>
+
+{% endif %}
+{% endwith %}
+
+{% with messages = get_flashed_messages() %}
+{% if messages[0] == 'faild' %}
+  
+<script language="javascript">
+
+  alert('有使用者有使用到這筆資料，所以不能刪除');
+
+</script>
+
+{% endif %}
+{% endwith %}
+
+<br/><br/>
+<div class="container-xl">
+  <form method="post" enctype="multipart/form-data" action="{{ url_for('manager_new.edit_student') }}">
+    <table class="table table-bordered">
+      <tbody>
+        <tr>
+          <th>學號</th>
+          <td><input class="form-control" type="text" name="sId" value="{{ student.sId }}" readonly></td>
+        </tr>
+
+        <tr>
+          <th>姓名</th>
+          <td><input class="form-control" type="text" name="sName" value="{{ student.sName }}" required></td>
+        </tr>
+
+        <tr>
+          <th>性別</th>
+          <td>
+            <select class="form-control" name="gender" value="{{ student.gender }}" required>
+              <option value="男" {% if student.gender == '男' %}selected{% endif %}>男</option>
+              <option value="女" {% if student.gender == '女' %}selected{% endif %}>女</option>
+              <option value="其他" {% if student.gender == '其他' %}selected{% endif %}>其他</option>
+            </select>
+          </td>
+        </tr>
+
+        <tr>
+          <th>年級</th>
+          <td><input class="form-control" type="number" min="1" max="7" name="grade" value="{{ student.grade }}" required></td>
+        </tr>
+
+        <tr>
+          <th>系所</th>
+          <td><input class="form-control" type="text" name="department" value="{{ student.department }}" required></td>
+        </tr>
+
+        <tr>
+          <th>是否為社員</th>
+          <td>
+            <select class="form-control" name="isMember" value="{{ student.isMember }}" required>
+              <option value="true" {% if student.isMember %}selected{% endif %}>是</option>
+              <option value="false" {% if not student.isMember %}selected{% endif %}>否</option>
+            </select>
+          </td>
+        </tr>
+
+        <tr>
+          <th>所屬後勤團隊</th>
+          <td>
+            <select class="form-control" name="logistic">
+              {% for logistic in logistic_data %}
+                <option value="{{ logistic[0] }}" {% if student.lName == logistic[0] %}selected{% endif %}>
+                  {{ logistic[0] }}
+                </option>
+              {% endfor %}
+            </select>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <center>
+      <div class="option">
+        <button class="btn btn-outline-success" type="submit">確定修改</button> 
+        <a href="{{ url_for('manager_new.studentManager') }}">
+          <button class="btn btn-outline-danger" type="button">回學生管理</button>
+        </a>
+      </div>
+    </center>
+  </form>
+</div>
+
+
+{% endblock content%}

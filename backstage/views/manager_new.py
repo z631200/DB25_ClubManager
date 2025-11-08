@@ -21,7 +21,7 @@ def config():
 
 @manager_new.route('/', methods=['GET', 'POST'])
 def home():
-    return redirect(url_for('manager.studentManager'))
+    return redirect(url_for('manager_new.studentManager'))
 
 # ================== Student Management =====================
 @manager_new.route('/studentManager', methods=['GET', 'POST'])
@@ -42,7 +42,7 @@ def studentManager():
 
     elif 'edit' in request.values:
         sId = request.values.get('edit')
-        return redirect(url_for('manager.edit_student', sId=sId))
+        return redirect(url_for('manager_new.edit_student', sId=sId))
     
 
     student_data = student()
@@ -107,32 +107,44 @@ def edit_student():
     if request.method == 'POST':
         Student.update_student(
             {
-            'pname' : request.values.get('pname'),
-            'gender' : request.values.get('gender'),
-            'department' : request.values.get('department'),
-            'grade' : request.values.get('grade'),
-            'sId' : request.values.get('sId')
+                'sId' : request.values.get('sId'),
+                'sName' : request.values.get('sName'),
+                'gender' : request.values.get('gender'),
+                'grade' : request.values.get('grade'),                
+                'department' : request.values.get('department'),
+                'isMember' : request.values.get('isMember'),
+                'logistic' : request.values.get('logistic'),
             }
         )
-        return redirect(url_for('manager.studentManager'))
+        return redirect(url_for('manager_new.studentManager'))
     else:
         student = show_student_info()
-        return render_template('edit_student.html', data=student)
+        logistic_data = Logistic.get_all_logistic()
+
+        print(student)
+        print(logistic_data)
+        return render_template('studentEditor.html', student=student, logistic_data=logistic_data)
     
 def show_student_info():
     sId = request.args['sId']
-    data = Student.get_student(sId)
-    pname = data[1]
+    record = Student.get_student(sId)
+    data = record[0]
+    sName = data[1]
     gender = data[2]
-    department = data[3]
-    grade = data[4]
-    
+    grade = data[3]
+    department = data[4]
+    isMember = data[5]
+    lName = data[6]
+
     student = {
-        '使用者編號': sId,
-        '使用者名稱': pname,
-        '使用者性別': gender,
-        '使用者系別': department,
-        '使用者年級': grade
+        'sId': sId,
+        'sName': sName,
+        'gender': gender,
+        'department': department,
+        'grade': grade,
+        'isMember': isMember,
+        'lName': lName
+
     }
     return student
 
@@ -145,7 +157,7 @@ def logisticManager():
 
     elif 'edit' in request.values:
         logistic_name = request.values.get('edit')
-        return redirect(url_for('manager.edit_logistic', logistic_name=logistic_name))
+        return redirect(url_for('manager_new.edit_logistic', logistic_name=logistic_name))
 
     Logistic_data = logistic()
     return render_template('logisticManager.html', logistic_data = Logistic_data)
@@ -172,10 +184,10 @@ def add_logistic():
         # validation, can be extended
         if logistic_name is None:
             flash('所有欄位都是必填的，請確認輸入內容。')
-            return redirect(url_for('manager.logisticManager'))
+            return redirect(url_for('manager_new.logisticManager'))
         if len(logistic_name) < 1:
             flash('後勤名稱不可為空。')
-            return redirect(url_for('manager.logisticManager'))
+            return redirect(url_for('manager_new.logisticManager'))
 
         Logistic.add_logistic(
             {
@@ -184,7 +196,7 @@ def add_logistic():
             }
         )
 
-        return redirect(url_for('manager.logisticManager'))
+        return redirect(url_for('manager_new.logisticManager'))
     
     return render_template('logisticManager.html')
 
@@ -197,7 +209,7 @@ def edit_logistic():
             'logistic_description' : request.values.get('description'),
             }
         )
-        return redirect(url_for('manager.logisticManager'))
+        return redirect(url_for('manager_new.logisticManager'))
     else:
         logistic = show_logistic_info()
         return render_template('edit_logistic.html', data=logistic)
@@ -222,7 +234,7 @@ def equipmentManager():
 
     elif 'edit' in request.values:
         equipment_id = request.values.get('edit')
-        return redirect(url_for('manager.edit_equipment', equipment_id=equipment_id))
+        return redirect(url_for('manager_new.edit_equipment', equipment_id=equipment_id))
 
     equipment_data = equipment()
     return render_template('equipmentManager.html', equipment_data = equipment_data)
@@ -254,10 +266,10 @@ def add_equipment():
         # validation, can be extended
         if equipment_name is None:
             flash('所有欄位都是必填的，請確認輸入內容。')
-            return redirect(url_for('manager.equipmentManager'))
+            return redirect(url_for('manager_new.equipmentManager'))
         if len(equipment_name) < 1:
             flash('設備名稱不可為空。')
-            return redirect(url_for('manager.equipmentManager'))
+            return redirect(url_for('manager_new.equipmentManager'))
 
         Equipment.add_equipment(
             {
@@ -267,7 +279,7 @@ def add_equipment():
             }
         )
 
-        return redirect(url_for('manager.equipmentManager'))
+        return redirect(url_for('manager_new.equipmentManager'))
     
     return render_template('equipmentManager.html')
 
@@ -282,7 +294,7 @@ def edit_equipment():
             'equipment_id' : request.values.get('equipment_id')
             }
         )
-        return redirect(url_for('manager.equipmentManager'))
+        return redirect(url_for('manager_new.equipmentManager'))
     else:
         equipment = show_equipment_info()
         return render_template('edit_equipment.html', data=equipment)
@@ -345,10 +357,10 @@ def add_activity():
         # validation, can be extended
         if activity_name is None:
             flash('所有欄位都是必填的，請確認輸入內容。')
-            return redirect(url_for('manager.activityManager'))
+            return redirect(url_for('manager_new.activityManager'))
         if len(activity_name) < 1:
             flash('活動名稱不可為空。')
-            return redirect(url_for('manager.activityManager'))
+            return redirect(url_for('manager_new.activityManager'))
 
         Activity.add_activity(
             {
@@ -358,7 +370,7 @@ def add_activity():
             }
         )
 
-        return redirect(url_for('manager.activityManager'))
+        return redirect(url_for('manager_new.activityManager'))
     
     return render_template('activityManager.html')
 
@@ -374,7 +386,7 @@ def edit_activity():
             'aSeq' : request.values.get('aSeq')
             }
         )
-        return redirect(url_for('manager.activityManager'))
+        return redirect(url_for('manager_new.activityManager'))
     else:
         activity = show_activity_info()
         return render_template('edit_activity.html', data=activity)
@@ -447,10 +459,10 @@ def add_program():
         # validation, can be extended
         if program_name is None:
             flash('所有欄位都是必填的，請確認輸入內容。')
-            return redirect(url_for('manager.programManager'))
+            return redirect(url_for('manager_new.programManager'))
         if len(program_name) < 1:
             flash('節目名稱不可為空。')
-            return redirect(url_for('manager.programManager'))
+            return redirect(url_for('manager_new.programManager'))
 
         Program.add_program(
             {

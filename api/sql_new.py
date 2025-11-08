@@ -119,12 +119,19 @@ class Student:
         DB.execute_input(sql, (sId,))
 
     @staticmethod
-    def edit_student(input_data):
-        sql = ''
+    def update_student(input_data):
+        sql = '''
+            UPDATE student SET sName = %s, gender = %s, grade = %s,
+              department = %s, isMember = %s, lName = %s WHERE sId = %s
+        '''
         DB.execute_input(sql, (
-            input_data['field1'],
-            input_data['field2'],
-            input_data['uid']
+            input_data['sName'],
+            input_data['gender'],
+            input_data['grade'],
+            input_data['department'],
+            input_data['isMember'],
+            input_data['logistic'],
+            input_data['sId']
         ))
 
 
@@ -134,10 +141,12 @@ class Logistic:
         sql = 'SELECT * FROM logistic'
         return DB.fetchall(sql)
     
+    @staticmethod
     def get_logistic(lName):
-        sql = ''
-        return DB.fetchall(sql)
-    
+        sql = 'SELECT * FROM logistic WHERE lName = %s'
+        return DB.fetchall(sql, (lName,))
+
+    @staticmethod
     def create_logistic(input_data):
         sql = ''
         DB.execute_input(sql, (
