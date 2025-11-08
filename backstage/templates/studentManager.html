@@ -92,7 +92,6 @@
                         <label for="inputStudentDepartment" class="form-label">學生系所</label>
                         <input type="text" class="form-control" id="inputStudentDepartment" name="department" required>
                     </div>
-                   
                     <div class="mb-3">
                         <label for="inputIsMember" class="form-label">是否為成員</label>
                         <select id="inputIsMember" class="form-select" name="isMember" required>
@@ -103,13 +102,20 @@
                     </div>
                     <div class="mb-3">
                         <label for="inputStudentLogistic" class="form-label">學生所屬後勤團隊</label>
-                        <input type="text" class="form-control" id="inputStudentLogistic" name="logistic">
-                    </div> 
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">取消</button>
-                    <button type="submit" class="btn btn-success">確定新增</button>
-                </div>
+                        <select id="inputStudentLogistic" class="form-select" name="logistic">
+                            <option selected disabled value="">請選擇後勤團隊</option>
+                            {% for logistic in logistic_data %}
+                                <option value="{{ logistic[0] }}" {% if student.lName == logistic[0] %}selected{% endif %}>
+                                    {{ logistic[0] }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">取消</button>
+                        <button type="submit" class="btn btn-success">確定新增</button>
+                    </div>
+                </div>                
             </div>
         </div>
     </div>
