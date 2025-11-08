@@ -226,28 +226,39 @@ class Activity:
         sql = 'SELECT * FROM activity'
         return DB.fetchall(sql)
     
-    def get_activity(aid):
-        sql = ''
-        return DB.fetchall(sql)
-    
-    def create_activity(input_data):
-        sql = ''
-        DB.execute_input(sql, (
-            input_data['field1'],
-            input_data['field2'],
-            input_data['field3']
-        ))
-    
-    def delete_activity(aid):
-        sql = ''
-        DB.execute_input(sql, (aid,))
+    @staticmethod
+    def get_activity(aSeq):
+        sql = 'SELECT * FROM activity WHERE aSeq = %s'
+        return DB.fetchall(sql, (aSeq,))
 
-    def edit_activity(input_data):
-        sql = ''
+    @staticmethod
+    def create_activity(input_data):
+        sql = '''
+            INSERT INTO activity (aSeq, aName, activityDate, aLocation)
+            VALUES (%s, %s, %s, %s)
+        '''
         DB.execute_input(sql, (
-            input_data['field1'],
-            input_data['field2'],
-            input_data['aid']
+            input_data['aSeq'],
+            input_data['aName'],
+            input_data['activityDate'],
+            input_data['aLocation']
+        ))
+
+    @staticmethod
+    def delete_activity(aSeq):
+        sql = 'DELETE FROM activity WHERE aSeq = %s'
+        DB.execute_input(sql, (aSeq,))
+
+    @staticmethod
+    def update_activity(input_data):
+        sql = '''
+            UPDATE activity SET aName = %s, activityDate = %s, aLocation = %s WHERE aSeq = %s
+        '''
+        DB.execute_input(sql, (
+            input_data['aName'],
+            input_data['activityDate'],
+            input_data['aLocation'],
+            input_data['aSeq']
         ))
 
 

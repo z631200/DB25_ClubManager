@@ -392,24 +392,25 @@ def activity():
 def add_activity():
     if request.method == 'POST':
 
-        # note: not completed
-        activity_name = request.values.get('activity_name')
-        activity_date = request.values.get('activity_date')
-        activity_description = request.values.get('description')
+        aSeq = request.values.get('aSeq')
+        aName = request.values.get('aName')
+        activityDate = request.values.get('activityDate')
+        aLocation = request.values.get('aLocation')
 
         # validation, can be extended
-        if activity_name is None:
+        if aName is None:
             flash('所有欄位都是必填的，請確認輸入內容。')
             return redirect(url_for('manager_new.activityManager'))
-        if len(activity_name) < 1:
+        if len(aName) < 1:
             flash('活動名稱不可為空。')
             return redirect(url_for('manager_new.activityManager'))
 
-        Activity.add_activity(
+        Activity.create_activity(
             {
-            'activity_name' : activity_name,
-            'activity_date' : activity_date,
-            'activity_description' : activity_description
+            'aSeq' : aSeq,
+            'aName' : aName,
+            'activityDate' : activityDate,
+            'aLocation' : aLocation
             }
         )
 
@@ -420,32 +421,33 @@ def add_activity():
 @manager_new.route('/edit_activity', methods=['GET', 'POST'])
 def edit_activity():
     if request.method == 'POST':
-        print(f"\n\n\n\n\n\n")
         Activity.update_activity(
             {
-            'activity_name' : request.values.get('activity_name'),
-            'activity_date' : request.values.get('activity_date'),
-            'activity_description' : request.values.get('description'),
-            'aSeq' : request.values.get('aSeq')
+                'aName' : request.values.get('aName'),
+                'activityDate' : request.values.get('activityDate'),
+                'aLocation' : request.values.get('aLocation'),
+                'aSeq' : request.values.get('aSeq')
             }
         )
         return redirect(url_for('manager_new.activityManager'))
     else:
         activity = show_activity_info()
-        return render_template('edit_activity.html', data=activity)
+        print(activity)
+        return render_template('activityEditor.html', activity=activity)
 
 def show_activity_info():
     aSeq = request.args['aSeq']
-    data = Activity.get_activity(aSeq)
-    activity_name = data[1]
-    activity_date = data[2]
-    activity_description = data[3]
-    
+    record = Activity.get_activity(aSeq)
+    data = record[0]
+    aName = data[1]
+    activityDate = data[2]
+    aLocation = data[3]
+
     activity = {
-        '活動編號': aSeq,
-        '活動名稱': activity_name,
-        '活動日期': activity_date,
-        '活動描述': activity_description
+        'aSeq': aSeq,
+        'aName': aName,
+        'activityDate': activityDate,
+        'aLocation': aLocation
     }
     return activity
 
