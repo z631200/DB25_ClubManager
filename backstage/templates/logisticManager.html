@@ -8,29 +8,29 @@
 {% block content %}
 
 {% with messages = get_flashed_messages() %}
-{% if messages[0] == 'No permission' %}
-  
+{% if messages[0] == 'No permission' %}  
 <script language="javascript">
-
   alert('您沒有使用者的權限喔！');
-
 </script>
-
-
 {% endif %}
 {% endwith %}
 
 {% with messages = get_flashed_messages() %}
-{% if messages[0] == 'failed' %}
-  
+{% if messages[0] == 'failed' %}  
 <script language="javascript">
-
   alert('有使用者有使用到這筆資料，所以不能刪除');
-
 </script>
-
 {% endif %}
 {% endwith %}
+
+{% with messages = get_flashed_messages() %}
+{% if messages[0] == 'failed with UniqueViolation' %}  
+<script language="javascript">
+  alert('後勤名稱已存在，請使用其他名稱。');
+</script>
+{% endif %}
+{% endwith %}
+
 
 <script>
     $(document).ready(function(){

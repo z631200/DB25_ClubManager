@@ -91,6 +91,11 @@ def create_student():
         if len(sName) < 1:
             flash('使用者名稱不可為空。')
             return redirect(url_for('manager_new.studentManager'))
+        
+        existing = Student.get_student(sId)
+        if existing:
+            flash('failed with UniqueViolation')
+            return redirect(url_for('manager_new.studentManager'))
 
         Student.create_student(
             {
@@ -198,6 +203,11 @@ def add_logistic():
         if len(lName) < 1:
             flash('後勤名稱不可為空。')
             return redirect(url_for('manager_new.logisticManager'))
+        
+        existing = Logistic.get_logistic(lName)
+        if existing:
+            flash('failed with UniqueViolation')
+            return redirect(url_for('manager_new.logisticManager'))
 
         Logistic.create_logistic(
             {
@@ -293,6 +303,11 @@ def add_equipment():
             return redirect(url_for('manager_new.equipmentManager'))
         if len(eName) < 1:
             flash('設備名稱不可為空。')
+            return redirect(url_for('manager_new.equipmentManager'))
+        
+        existing = Equipment.get_equipment(eId)
+        if existing:
+            flash('failed with UniqueViolation')
             return redirect(url_for('manager_new.equipmentManager'))
 
         Equipment.create_equipment(
@@ -404,6 +419,11 @@ def add_activity():
         if len(aName) < 1:
             flash('活動名稱不可為空。')
             return redirect(url_for('manager_new.activityManager'))
+        
+        existing = Activity.get_activity(aSeq)
+        if existing:
+            flash('failed with UniqueViolation')
+            return redirect(url_for('manager_new.activityManager'))
 
         Activity.create_activity(
             {
@@ -509,6 +529,12 @@ def add_program():
         if len(Song) < 1:
             flash('曲目名稱不可為空。')
             return redirect(url_for('manager_new.programManager'))
+        
+        existing = Program.get_program(aSeq, programTime)
+        print(f"program: {existing}")
+        if existing:
+            flash('failed with UniqueViolation')
+            return redirect(url_for('manager_new.programManager', aSeq=aSeq))
 
         Program.create_program(
             {
