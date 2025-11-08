@@ -432,7 +432,6 @@ def edit_activity():
         return redirect(url_for('manager_new.activityManager'))
     else:
         activity = show_activity_info()
-        print(activity)
         return render_template('activityEditor.html', activity=activity)
 
 def show_activity_info():
@@ -455,26 +454,27 @@ def show_activity_info():
 @manager_new.route('/programManager', methods=['GET', 'POST'])
 def programManager():
     aSeq = request.values.get('aSeq')
-    # print(f"Debug: aSeq = {aSeq}")
-    # print(f"Request values: {request.values}")
+
     if not aSeq:
-        print("活動編號缺失，無法顯示節目列表。")
         flash('活動編號缺失，無法顯示節目列表。')
         return redirect(url_for('manager_new.activityManager'))
     
-
     if 'delete' in request.values:
-        print("Delete program")
         composite_key  = request.values.get('delete')
-        aSeq, program_time = composite_key.split('|', 1)
-        Program.delete_program(aSeq, program_time)
+        if composite_key is None:
+            flash('無法刪除節目，缺少必要的識別資訊。')
+            return redirect(url_for('manager_new.programManager', aSeq=aSeq))
+        aSeq, programTime = composite_key.split('|', 1)
+        Program.delete_program(aSeq, programTime)
         return redirect(url_for('manager_new.programManager', aSeq=aSeq))
+    
     elif 'edit_program' in request.values:
-        print("Edit program")
         composite_key = request.values.get('edit_program')
-        aSeq, program_time = composite_key.split('|', 1)
-
-        return redirect(url_for('manager_new.edit_program', aSeq=aSeq, program_time=program_time))
+        if composite_key is None:
+            flash('無法編輯節目，缺少必要的識別資訊。')
+            return redirect(url_for('manager_new.programManager', aSeq=aSeq))
+        aSeq, programTime = composite_key.split('|', 1)
+        return redirect(url_for('manager_new.edit_program', aSeq=aSeq, programTime=programTime))
 
    
     program_data = program(aSeq)
@@ -495,60 +495,63 @@ def program(aSeq):
 @manager_new.route('/add_program', methods=['POST'])
 def add_program():
     if request.method == 'POST':
-
-        # note: not completed
-        program_name = request.values.get('program_name')
-        program_host = request.values.get('program_host')
-        program_time = request.values.get('program_time')
+        aSeq = request.values.get('aSeq')
+        programTime = request.values.get('programTime')
+        Song = request.values.get('Song')
 
         # validation, can be extended
-        if program_name is None:
+        if programTime is None or Song is None:
             flash('所有欄位都是必填的，請確認輸入內容。')
             return redirect(url_for('manager_new.programManager'))
-        if len(program_name) < 1:
-            flash('節目名稱不可為空。')
+        if len(programTime) < 1:
+            flash('節目時間不可為空。')
+            return redirect(url_for('manager_new.programManager'))
+        if len(Song) < 1:
+            flash('曲目名稱不可為空。')
             return redirect(url_for('manager_new.programManager'))
 
-        Program.add_program(
+        Program.create_program(
             {
-            'program_name' : program_name,
-            'program_host' : program_host,
-            'program_time' : program_time
+                'aSeq' : aSeq,
+                'programTime' : programTime,
+                'Song' : Song
             }
         )
 
-        return redirect(url_for('manager_new.programManager'))
+        return redirect(url_for('manager_new.programManager', aSeq=aSeq))
     
     return render_template('programManager.html')
 
 @manager_new.route('/edit_program', methods=['GET', 'POST'])
 def edit_program():
+    aSeq = request.values.get('aSeq')
     if request.method == 'POST':
-        aSeq = request.values.get('aSeq')
         Program.update_program(
             {
-            'program_name' : request.values.get('program_name'),
-            'program_host' : request.values.get('program_host'),
-            'program_time' : request.values.get('program_time'),
-            'program_id' : request.values.get('program_id')
+                'new_programTime' : request.values.get('new_programTime'),
+                'Song' : request.values.get('Song'),
+                'aSeq' : aSeq,
+                'programTime' : request.values.get('programTime')
             }
         )
+        print(f"Updated program: {aSeq}, {request.values.get('programTime')}, {request.values.get('Song')}")
         return redirect(url_for('manager_new.programManager', aSeq=aSeq))
     else:
         program = show_program_info()
-        return render_template('edit_program.html', data=program)
+        return render_template('programEditor.html', program=program)
 
 def show_program_info():
-    program_id = request.args['program_id']
-    data = Program.get_program(program_id)
-    program_name = data[1]
-    program_host = data[2]
-    program_time = data[3]
+    aSeq = request.args['aSeq']
+    programTime = request.args['programTime']
+    record = Program.get_program(aSeq, programTime)
+    data = record[0]
+    # aSeq = data[0]
+    # programTime = data[1]
+    Song = data[2]
     
     program = {
-        '節目編號': program_id,
-        '節目名稱': program_name,
-        '節目主持人': program_host,
-        '節目時間': program_time
+        'aSeq': aSeq,
+        'programTime': programTime,
+        'Song': Song
     }
     return program

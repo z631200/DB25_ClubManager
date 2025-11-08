@@ -58,7 +58,7 @@
     </button>
 </div>
 
-<form method="post" enctype=multipart/form-data action={{ url_for('manager_new.add_program') }}>
+<form method="post" enctype=multipart/form-data action="{{ url_for('manager_new.add_program')}}">
     <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -67,17 +67,14 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+                    <input type="hidden" name="aSeq" value="{{ aSeq }}">
                     <div class="mb-3">
-                        <label for="inputProgramName" class="form-label">節目名稱</label>
-                        <input type="text" class="form-control" id="inputProgramName" name="program_name" required>
+                        <label for="inputProgramTime" class="form-label">節目時間</label>
+                        <input type="time" class="form-control" id="inputProgramTime" name="programTime" required>
                     </div>
                     <div class="mb-3">
-                        <label for="inputProgramDate" class="form-label">節目日期</label>
-                        <input type="date" class="form-control" id="inputProgramDate" name="program_date" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="inputProgramLocation" class="form-label">節目地點</label>
-                        <input type="text" class="form-control" id="inputProgramLocation" name="program_location" required>
+                        <label for="inputSong" class="form-label">曲目</label>
+                        <input type="text" class="form-control" id="inputSong" name="Song" required>
                     </div>
                 </div>
                 <div class="modal-footer">

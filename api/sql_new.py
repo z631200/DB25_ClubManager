@@ -263,38 +263,48 @@ class Activity:
 
 
 class Program:
+    # @staticmethod
+    # def get_all_program():
+    #     sql = ''
+    #     return DB.fetchall(sql)
+
     @staticmethod
-    def get_all_program():
-        sql = ''
-        return DB.fetchall(sql)
-    
     def get_activity_program(aSeq):
         sql = 'SELECT * FROM program WHERE aSeq = %s'
         return DB.fetchall(sql, (aSeq,))
     
-    def get_program(pid):
-        sql = ''
-        return DB.fetchall(sql)
-    
-    def create_program(input_data):
-        sql = ''
-        DB.execute_input(sql, (
-            input_data['field1'],
-            input_data['field2'],
-            input_data['field3']
-        ))
-    
-    def delete_program(pid):
-        sql = ''
-        DB.execute_input(sql, (pid,))
+    @staticmethod
+    def get_program(aSeq, programTime):
+        sql = 'SELECT * FROM program WHERE aSeq = %s AND programTime = %s'
+        return DB.fetchall(sql, (aSeq, programTime))
 
-    def edit_program(input_data):
-        sql = ''
+    @staticmethod
+    def create_program(input_data):
+        print(input_data)
+        sql = 'INSERT INTO program (aSeq, programTime, Song) VALUES (%s, %s, %s)'
         DB.execute_input(sql, (
             input_data['aSeq'],
-            input_data['program_id'],
-            input_data['old_program_name'],
-            input_data['old_program_time'],
+            input_data['programTime'],
+            input_data['Song']
+        ))
+
+    @staticmethod
+    def delete_program(aSeq, programTime):
+        sql = 'DELETE FROM program WHERE aSeq = %s AND programTime = %s'
+        DB.execute_input(sql, (aSeq, programTime))
+
+    @staticmethod
+    def update_program(input_data):
+        sql = '''
+            UPDATE program SET programTime = %s, Song = %s 
+            WHERE aSeq = %s AND programTime = %s
+        '''
+        print(f"input_data: {input_data}")
+        DB.execute_input(sql, (
+            input_data['new_programTime'],
+            input_data['Song'],
+            input_data['aSeq'],
+            input_data['programTime']
         ))
 
 
