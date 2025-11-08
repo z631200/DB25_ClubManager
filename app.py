@@ -8,13 +8,14 @@ from sqlalchemy import null
 from api.api import *
 from api.sql import *
 # from bookstore.views.store import *
-from backstage.views.analysis import *
+# from backstage.views.analysis import *
 # from backstage.views.manager import *
 from link import *
 from werkzeug.utils import secure_filename
 # noted change
 from api.sql_new import *
 from backstage.views.manager_new import *
+from backstage.views.analysis_new import *
 
 
 ## Flask-Login : 確保未登入者不能使用系統
@@ -23,10 +24,11 @@ app.secret_key = 'Your Key'
 
 app.register_blueprint(api, url_prefix='/')
 # app.register_blueprint(store, url_prefix='/bookstore')
-app.register_blueprint(analysis, url_prefix='/backstage')
 # app.register_blueprint(manager, url_prefix='/backstage')
 # noted change
 app.register_blueprint(manager_new, url_prefix='/backstage')
+app.register_blueprint(analysis_new, url_prefix='/backstage')
+
 
 
 login_manager.init_app(app)

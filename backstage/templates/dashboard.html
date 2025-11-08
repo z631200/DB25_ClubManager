@@ -10,180 +10,265 @@
   <div id="dashboard">
     <nav>
       <div class="nav nav-tabs" id="nav-tab" role="tablist">
-        <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">訂單數量分析</button>
-        <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">書本銷量分類</button>
-        <button class="nav-link" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#nav-contact" type="button" role="tab" aria-controls="nav-contact" aria-selected="false">消費總額排名</button>        
-      </div>      
+        <button class="nav-link active" id="tab-participants" data-bs-toggle="tab" data-bs-target="#pane-participants" type="button" role="tab" aria-controls="pane-participants" aria-selected="true">活動參與人數</button>
+        <button class="nav-link" id="tab-activity-detail" data-bs-toggle="tab" data-bs-target="#pane-activity-detail" type="button" role="tab" aria-controls="pane-activity-detail" aria-selected="false">活動節目明細</button>
+        <button class="nav-link" id="tab-equipment-usage" data-bs-toggle="tab" data-bs-target="#pane-equipment-usage" type="button" role="tab" aria-controls="pane-equipment-usage" aria-selected="false">節目器材使用</button>
+        <button class="nav-link" id="tab-equipment-belongs" data-bs-toggle="tab" data-bs-target="#pane-equipment-belongs" type="button" role="tab" aria-controls="pane-equipment-belongs" aria-selected="false">負責器材</button>
+        <button class="nav-link" id="tab-student" data-bs-toggle="tab" data-bs-target="#pane-student" type="button" role="tab" aria-controls="pane-student" aria-selected="false">學生參與查詢</button>
+      </div>
     </nav>
   </div>
+
   <br/>
+
   <div class="tab-content" id="nav-tabContent">
-    <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
-      <center> 
-        <div id="maina" class="container-fluid" style="width:1200px;height:500px"></div>
-      </center>
-    </div>
-    <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+    <!-- 活動參與人數（圖） -->
+    <div class="tab-pane fade show active" id="pane-participants" role="tabpanel" aria-labelledby="tab-participants">
       <center>
-        <div id="mainb" class="container-fluid" style="width: 600px;height:500px"></div>
+        <div id="chart-participants" class="container-fluid" style=" height: 500px;"></div>
       </center>
+      <!-- <div class="table-responsive mt-3">
+        <table class="table table-bordered">
+          <thead class="table-light">
+            <tr>
+              <th>活動名稱</th>
+              <th>參加人數</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in participants_data %}
+            <tr>
+              <td>{{ r.活動名稱 }}</td>
+              <td>{{ r.參加人數 }}</td>
+            </tr>
+            {% endfor %}
+            {% if participants_data|length == 0 %}
+            <tr><td colspan="2" class="text-center text-muted">目前沒有資料</td></tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div> -->
     </div>
-    <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
+
+    <!-- 活動節目明細（表） -->
+    <div class="tab-pane fade" id="pane-activity-detail" role="tabpanel" aria-labelledby="tab-activity-detail">
+      <div class="table-responsive">
+        <table class="table table-bordered">
+          <thead class="table-light">
+            <tr>
+              <th>活動名稱</th>
+              <th>節目名稱</th>
+              <th>表演者</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in activity_detail %}
+            <tr>
+              <td>{{ r.活動名稱 }}</td>
+              <td>{{ r.節目名稱 }}</td>
+              <td>{{ r.表演者 }}</td>
+            </tr>
+            {% endfor %}
+            {% if activity_detail|length == 0 %}
+            <tr><td colspan="3" class="text-center text-muted">目前沒有資料</td></tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 節目器材使用（圖 + 表） -->
+    <div class="tab-pane fade" id="pane-equipment-usage" role="tabpanel" aria-labelledby="tab-equipment-usage">
       <center>
-        <div id="mainc" class="container-fluid" style="width: 1200px;height:500px"></div>
+        <div id="chart-equipment" class="container-fluid" style="height: 500px;"></div>
       </center>
+      <!-- <div class="table-responsive mt-3">
+        <table class="table table-bordered">
+          <thead class="table-light">
+            <tr>
+              <th>節目名稱</th>
+              <th>器材名稱</th>
+              <th>數量</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in equipment_usage %}
+            <tr>
+              <td>{{ r.節目名稱 }}</td>
+              <td>{{ r.器材名稱 }}</td>
+              <td>{{ r.數量 }}</td>
+            </tr>
+            {% endfor %}
+            {% if equipment_usage|length == 0 %}
+            <tr><td colspan="3" class="text-center text-muted">目前沒有資料</td></tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+      <small class="text-muted">圖表為前端將同一節目各器材「數量」加總之視覺化。</small> -->
+    </div>
+
+    <!-- 後勤歸屬（表） -->
+    <div class="tab-pane fade" id="pane-equipment-belongs" role="tabpanel" aria-labelledby="tab-equipment-belongs">
+      <div class="table-responsive">
+        <table class="table table-bordered">
+          <thead class="table-light">
+            <tr>
+              <th>組別</th>
+              <th>器材名稱</th>
+              <th>成員</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in equipment_belongs %}
+            <tr>
+              <td>{{ r.組別 }}</td>
+              <td>{{ r.器材名稱 if r.器材名稱 else '-' }}</td>
+              <td>{{ r.成員 if r.成員 else '-' }}</td>
+            </tr>
+            {% endfor %}
+            {% if equipment_belongs|length == 0 %}
+            <tr><td colspan="3" class="text-center text-muted">目前沒有資料</td></tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 學生參與查詢（表 + 查詢列） -->
+    <div class="tab-pane fade" id="pane-student" role="tabpanel" aria-labelledby="tab-student">
+      <form class="row g-3 mb-3" method="get" action="{{ url_for('analysis_new.dashboard') }}">
+        <div class="col-auto">
+          <label for="sName" class="col-form-label">學生姓名</label>
+        </div>
+        <div class="col-auto">
+          <input type="text" class="form-control" id="sName" name="sName" placeholder="例如：王小明" value="{{ sName }}">
+        </div>
+        <div class="col-auto">
+          <button type="submit" class="btn btn-primary">查詢</button>
+        </div>
+        {% if sName %}
+        <div class="col-12">
+          <span class="badge bg-secondary">目前查詢：{{ sName }}</span>
+        </div>
+        {% endif %}
+      </form>
+
+      <div class="table-responsive">
+        <table class="table table-bordered">
+          <thead class="table-light">
+            <tr>
+              <th>學生</th>
+              <th>活動名稱</th>
+              <th>節目名稱</th>
+              <th>時間</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in student_participation %}
+            <tr>
+              <td>{{ r.學生 }}</td>
+              <td>{{ r.活動名稱 }}</td>
+              <td>{{ r.節目名稱 }}</td>
+              <td>{{ r.時間 }}</td>
+            </tr>
+            {% endfor %}
+            {% if student_participation|length == 0 %}
+            <tr><td colspan="4" class="text-center text-muted">尚未查詢或無資料</td></tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>
 
+<!-- ECharts：兩張圖（參與人數、器材加總） -->
 <script>
-  // 以長條圖與折線圖分析各月訂單
-  var chartDoma = document.getElementById('maina');
-  var myCharta = echarts.init(chartDoma);
-  var data = {{revenue|tojson}};
-  var count = {{dataa|tojson}};
-  var optiona = {
-    title: {
-      text: '各月訂單數量分析'
-    },
-    tooltip: {},
-    legend: {
-      data: ['訂單數量']
-    },
-    xAxis: {
-      data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
-    },
-    yAxis: {},
+  // 後端資料
+  const participants = JSON.parse('{{ participants_data | tojson | safe }}');
+  const equipmentUsageRows = JSON.parse('{{ equipment_usage | tojson | safe }}');
+
+  // ========= 圖 1：各活動參與人數 =========
+  const actNames = participants.map(d => d['活動名稱']);
+  const actCounts = participants.map(d => d['參加人數']);
+
+  const chartDoma = document.getElementById('chart-participants');
+  const myCharta = echarts.init(chartDoma);
+
+  const optiona = {
+    title: { text: '各活動參與人數' },
+    tooltip: { trigger: 'axis' },
+    xAxis: { type: 'category', data: actNames },
+    yAxis: { type: 'value', name: '人數', minInterval: 1 },
     series: [{
-      name: '銷售總額',
+      name: '參加人數',
       type: 'bar',
-      // symbol: 'circle',
-      symbolSize: 16,
-      data: data,
-      markPoint: {
-        data: [
-          {type: 'max', name: '銷量最高月份'},
-          {type: 'min', name: '銷量最低月份'}
-        ]
-      },
-      label: {
-        show: true,
-        position: 'top',
-        textStyle: {
-          fontSize: 15
-        }
-      }
-    }
-    ],
-    legend: {
-      show: true
-    },
+      data: actCounts,
+      label: { show: true, position: 'top' },
+      markPoint: { data: [{type: 'max', name: '最高'}, {type: 'min', name: '最低'}] }
+    }],
+    grid: { left: 50, right: 30, bottom: 60, top: 60 }
   };
 
-  // 以圓餅圖分析書本銷量
-  var chartDomb = document.getElementById('mainb');
-  var myChartb = echarts.init(chartDomb);
-  var data = {{datab|tojson}};
-  var optionb = {
-    title: {
-      text: '各類商品銷量分析',
-      left: 'center',
-      top: 'center'
-    },
-    tooltip: {},
-    legend: {
-      orient: 'vertical',
-      x: 'left',
-      data: ['BOOK', 'CD', 'DVD']
-    },
-    series: [
-      {
-        type: 'pie',
-        data: data,          
-        radius: ['40%', '70%']
-      }
-    ]
+  // ========= 圖 2：各節目器材總量（前端彙總） =========
+  // equipment_usage: [{ 節目名稱, 器材名稱, 數量 }, ...]
+  const usageByProgram = {};
+  equipmentUsageRows.forEach(r => {
+    const prog = r['節目名稱'] || '(未命名節目)';
+    const qty = Number(r['數量'] || 0);
+    usageByProgram[prog] = (usageByProgram[prog] || 0) + qty;
+  });
+
+  const programNames = Object.keys(usageByProgram);
+  const programTotals = programNames.map(k => usageByProgram[k]);
+
+  const chartDomb = document.getElementById('chart-equipment');
+  const myChartb = echarts.init(chartDomb);
+
+  const optionb = {
+    title: { text: '各節目器材總量（加總視覺化）' },
+    tooltip: { trigger: 'axis' },
+    xAxis: { type: 'category', data: programNames },
+    yAxis: { type: 'value', name: '器材數量' },
+    series: [{
+      name: '器材總量',
+      type: 'bar',
+      data: programTotals,
+      label: { show: true, position: 'top' }
+    }],
+    grid: { left: 50, right: 30, bottom: 80, top: 60 }
   };
-
-  // 使用動態長條圖查看消費總額最多的使用者
-  var chartDomc = document.getElementById('mainc');
-  var myChartc = echarts.init(chartDomc);
-  var data = {{datac|tojson}};
-  var nameList = {{nameList|tojson}};
-  // var counter = {{counter|tojson}};
-  var countList = {{countList|tojson}};
-  var optionc = {
-    title: {
-      text: '使用者消費排名'
-    },
-    xAxis: {
-      max: 'dataMax'
-    },
-    yAxis: {
-      type: 'category',
-      data: nameList,
-      inverse: true,
-      animationDuration: 300,
-      animationDurationUpdate: 300,
-      max: 3
-    },
-    tooltip: {},
-    series: [
-      {
-        realtimeSort: true,
-        name: '消費總額',
-        type: 'bar',
-        data: data,
-        label: {
-          show: true,
-          position: 'right',
-          valueAnimation: true
-        }
-      },
-      {
-        realtimeSort: true,
-        name: '訂單總數',
-        type: 'bar',
-        data: countList,
-        label: {
-          show: true,
-          position: 'right',
-          valueAnimation: true
-        }
-      }
-      ],
-    legend: {
-      show: true
-    },
-    animationDuration: 3000,
-    animationDurationUpdate: 3000,
-    animationEasing: 'linear',
-    animationEasingUpdate: 'linear'
-  };
-
-  function run() {
-    myChartc.setOption({
-      series: [
-        {
-          type: 'bar',
-          data
-        }
-      ]
-    });
-  }
-
-  setTimeout(function() {
-    run();
-  }, 0);
-        
-  setInterval(function() {
-    update();
-  }, 3000);
 
   optiona && myCharta.setOption(optiona);
   optionb && myChartb.setOption(optionb);
-  optionc && myChartc.setOption(optionc);
-      
+
+  // 讓圖在分頁切換後能正確 resize
+  const tabEls = document.querySelectorAll('button[data-bs-toggle="tab"]');
+  tabEls.forEach(el => {
+    el.addEventListener('shown.bs.tab', () => {
+      myCharta.resize();
+      myChartb.resize();
+    });
+  });
+
+  window.addEventListener('resize', () => {
+    myCharta.resize();
+    myChartb.resize();
+  });
+  
+  const currentSName = "{{ sName }}";
+  if (currentSName && currentSName.trim() !== "") {
+    const tabStudentTrigger = document.querySelector('#tab-student');
+    if (tabStudentTrigger) {
+      const tab = new bootstrap.Tab(tabStudentTrigger);
+      tab.show();
+    }
+    if (window.history.replaceState) {
+      const cleanUrl = window.location.pathname;
+      window.history.replaceState({}, '', cleanUrl);
+    }
+  }
 </script>
 
 {% endblock content %}

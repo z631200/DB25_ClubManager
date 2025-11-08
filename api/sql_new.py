@@ -443,34 +443,91 @@ class Member:
 
 class Analysis:
     @staticmethod
-    def month_price(i):
-        sql = 'SELECT EXTRACT(MONTH FROM ordertime), SUM(price) FROM order_list WHERE EXTRACT(MONTH FROM ordertime) = %s GROUP BY EXTRACT(MONTH FROM ordertime)'
-        return DB.fetchall(sql, (i,))
-
-    @staticmethod
-    def month_count(i):
-        sql = 'SELECT EXTRACT(MONTH FROM ordertime), COUNT(oid) FROM order_list WHERE EXTRACT(MONTH FROM ordertime) = %s GROUP BY EXTRACT(MONTH FROM ordertime)'
-        return DB.fetchall(sql, (i,))
-
-    @staticmethod
-    def category_sale():
-        sql = 'SELECT SUM(total), category FROM product, record WHERE product.pid = record.pid GROUP BY category'
+    def count_participants():
+        sql = '''
+            SELECT A.aName AS 活動名稱, COUNT(SJ.sID) AS 參加人數
+            FROM Activity AS A
+            JOIN StudentJoin AS SJ ON A.aSeq = SJ.aSeq
+            GROUP BY A.aName;
+        '''
         return DB.fetchall(sql)
 
     @staticmethod
-    def member_sale():
+    def activity_detail():
         sql = '''
-        SELECT SUM(price), member.mid, (member.lname || member.fname) AS name 
-        FROM order_list, member 
-        WHERE order_list.mid = member.mid AND member.identity = %s GROUP BY member.mid, name ORDER BY SUM(price) DESC
+            SELECT A.aName AS 活動名稱, P.Song AS 節目名稱, S.sName AS 表演者
+            FROM Activity AS A
+            JOIN Program AS P ON A.aSeq = P.aSeq
+            JOIN Perform AS F ON P.aSeq = F.aSeq AND P.programTime  = F.programTime
+            JOIN Student AS S ON F.sID = S.sID
+            ORDER BY A.aSeq, P.programTime;
         '''
-        return DB.fetchall(sql, ('user',))
-
+        return DB.fetchall(sql)
+    
     @staticmethod
-    def member_sale_count():
+    def equipment_usage():
         sql = '''
-        SELECT COUNT(*), member.mid, (member.lname || member.fname) AS name 
-        FROM order_list, member 
-        WHERE order_list.mid = member.mid AND member.identity = %s GROUP BY member.mid, name ORDER BY COUNT(*) DESC
+            SELECT P.Song AS 節目名稱, E.eName AS 器材名稱, E.Quantity AS 數量
+            FROM Program AS P
+            JOIN Use AS U ON P.aSeq = U.aSeq AND P.programTime = U.programTime
+            JOIN Equipment AS E ON U.eID = E.eID
+            ORDER BY P.Song;
         '''
-        return DB.fetchall(sql, ('user',))
+        return DB.fetchall(sql)
+    
+    @staticmethod
+    def student_participation(sName):
+        sql = '''
+            SELECT S.sName, A.aName AS 活動名稱, P.Song AS 節目名稱, P.programTime AS 時間
+            FROM Student AS S
+            JOIN StudentJoin AS SJ ON S.sID = SJ.sID
+            JOIN Activity AS A ON SJ.aSeq = A.aSeq
+            JOIN Perform AS F ON S.sID = F.sID
+            JOIN Program AS P ON F.aSeq = P.aSeq AND F.programTime = P.programTime
+            WHERE S.sName = %s;
+        '''
+        return DB.fetchall(sql, (sName,))
+    
+    @staticmethod
+    def equipment_belongs():
+        sql = '''
+            SELECT L.lName AS 組別, E.eName AS 器材名稱, S.sName AS 成員
+            FROM Logistic AS L
+            LEFT JOIN Equipment AS E ON L.lName = E.lName
+            LEFT JOIN Student AS S ON L.lName = S.lName
+            ORDER BY L.lName;
+        '''
+        return DB.fetchall(sql)
+
+    # @staticmethod
+    # def month_price(i):
+    #     sql = 'SELECT EXTRACT(MONTH FROM ordertime), SUM(price) FROM order_list WHERE EXTRACT(MONTH FROM ordertime) = %s GROUP BY EXTRACT(MONTH FROM ordertime)'
+    #     return DB.fetchall(sql, (i,))
+
+    # @staticmethod
+    # def month_count(i):
+    #     sql = 'SELECT EXTRACT(MONTH FROM ordertime), COUNT(oid) FROM order_list WHERE EXTRACT(MONTH FROM ordertime) = %s GROUP BY EXTRACT(MONTH FROM ordertime)'
+    #     return DB.fetchall(sql, (i,))
+
+    # @staticmethod
+    # def category_sale():
+    #     sql = 'SELECT SUM(total), category FROM product, record WHERE product.pid = record.pid GROUP BY category'
+    #     return DB.fetchall(sql)
+
+    # @staticmethod
+    # def member_sale():
+    #     sql = '''
+    #     SELECT SUM(price), member.mid, (member.lname || member.fname) AS name 
+    #     FROM order_list, member 
+    #     WHERE order_list.mid = member.mid AND member.identity = %s GROUP BY member.mid, name ORDER BY SUM(price) DESC
+    #     '''
+    #     return DB.fetchall(sql, ('user',))
+
+    # @staticmethod
+    # def member_sale_count():
+    #     sql = '''
+    #     SELECT COUNT(*), member.mid, (member.lname || member.fname) AS name 
+    #     FROM order_list, member 
+    #     WHERE order_list.mid = member.mid AND member.identity = %s GROUP BY member.mid, name ORDER BY COUNT(*) DESC
+    #     '''
+    #     return DB.fetchall(sql, ('user',))
