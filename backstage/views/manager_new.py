@@ -43,10 +43,17 @@ def studentManager():
     elif 'edit' in request.values:
         sId = request.values.get('edit')
         return redirect(url_for('manager_new.edit_student', sId=sId))
-    
 
     student_data = student()
-    return render_template('studentManager.html', student_data = student_data)
+    logistic_data = Logistic.get_all_logistic()
+    dummy_student = type('S', (), {'lName': ''})()
+
+    return render_template(
+        'studentManager.html', 
+        student_data=student_data,
+        logistic_data=logistic_data,
+        student=dummy_student
+    )
 
 def student():
     student_row = Student.get_all_student()
@@ -98,8 +105,16 @@ def create_student():
         )
 
         return redirect(url_for('manager_new.studentManager'))
-
-    return render_template('studentManager.html')
+    
+    logistic_data = Logistic.get_all_logistic()
+    dummy_student = type('S', (), {'lName': ''})()
+    
+    return render_template(
+        'studentManager.html', 
+        student_data=student(), 
+        logistic_data=logistic_data, 
+        student=dummy_student
+    )
 
 @manager_new.route('/edit_student', methods=['GET', 'POST'])
 def edit_student():
@@ -156,7 +171,7 @@ def logisticManager():
         return redirect(url_for('manager_new.edit_logistic', lName=lName))
 
     Logistic_data = logistic()
-    return render_template('logisticManager.html', logistic_data = Logistic_data)
+    return render_template('logisticManager.html', logistic_data=Logistic_data)
 
 def logistic():
     logistic_row = Logistic.get_all_logistic()
@@ -186,8 +201,8 @@ def add_logistic():
 
         Logistic.create_logistic(
             {
-            'lName' : lName,
-            'Job_Desc' : Job_Desc
+                'lName' : lName,
+                'Job_Desc' : Job_Desc
             }
         )
 
@@ -200,9 +215,9 @@ def edit_logistic():
     if request.method == 'POST':
         Logistic.update_logistic(
             {
-            'new_lName' : request.values.get('new_lName'),
-            'Job_Desc' : request.values.get('Job_Desc'),
-            'lName' : request.values.get('lName')
+                'new_lName' : request.values.get('new_lName'),
+                'Job_Desc' : request.values.get('Job_Desc'),
+                'lName' : request.values.get('lName')
             }
         )
         return redirect(url_for('manager_new.logisticManager'))
@@ -227,15 +242,24 @@ def show_logistic_info():
 @manager_new.route('/equipmentManager', methods=['GET', 'POST'])
 def equipmentManager():
     if 'delete' in request.values:
-        equipment_id = request.values.get('delete')
-        Equipment.delete_equipment(equipment_id)
+        eId = request.values.get('delete')
+        Equipment.delete_equipment(eId)
 
     elif 'edit' in request.values:
-        equipment_id = request.values.get('edit')
-        return redirect(url_for('manager_new.edit_equipment', equipment_id=equipment_id))
+        eId = request.values.get('edit')
+        return redirect(url_for('manager_new.edit_equipment', eId=eId))
 
     equipment_data = equipment()
-    return render_template('equipmentManager.html', equipment_data = equipment_data)
+    logistic_data = Logistic.get_all_logistic()
+    dummy_equipment = type('S', (), {'lName': ''})()
+
+    return render_template(
+        'equipmentManager.html', 
+        equipment_data=equipment_data, 
+        logistic_data=logistic_data, 
+        equipment=dummy_equipment
+    )
+
 
 def equipment():
     equipment_row = Equipment.get_all_equipment()
@@ -256,59 +280,80 @@ def equipment():
 def add_equipment():
     if request.method == 'POST':
 
-        # note: not completed
-        equipment_name = request.values.get('equipment_name')
-        equipment_status = request.values.get('equipment_status')
-        equipment_description = request.values.get('description')
+        eId = request.values.get('eId')
+        eName = request.values.get('eName')
+        eLocation = request.values.get('eLocation')
+        Quantity = request.values.get('Quantity')
+        Note = request.values.get('Note')
+        lName = request.values.get('lName')
 
         # validation, can be extended
-        if equipment_name is None:
+        if eName is None or Quantity is None:
             flash('所有欄位都是必填的，請確認輸入內容。')
             return redirect(url_for('manager_new.equipmentManager'))
-        if len(equipment_name) < 1:
+        if len(eName) < 1:
             flash('設備名稱不可為空。')
             return redirect(url_for('manager_new.equipmentManager'))
 
-        Equipment.add_equipment(
+        Equipment.create_equipment(
             {
-            'equipment_name' : equipment_name,
-            'equipment_status' : equipment_status,
-            'equipment_description' : equipment_description
+                'eId': eId,
+                'eName': eName,
+                'eLocation': eLocation,
+                'Quantity': Quantity,
+                'Note': Note,
+                'lName': lName
             }
         )
 
         return redirect(url_for('manager_new.equipmentManager'))
     
-    return render_template('equipmentManager.html')
+    logistic_data = Logistic.get_all_logistic()
+    dummy_equipment = type('S', (), {'lName': ''})()
+
+    return render_template(
+        'equipmentManager.html',
+        equipment_data=equipment(),
+        logistic_data=logistic_data,
+        equipment=dummy_equipment
+    )
 
 @manager_new.route('/edit_equipment', methods=['GET', 'POST'])
 def edit_equipment():
     if request.method == 'POST':
         Equipment.update_equipment(
             {
-            'equipment_name' : request.values.get('equipment_name'),
-            'equipment_status' : request.values.get('equipment_status'),
-            'equipment_description' : request.values.get('description'),
-            'equipment_id' : request.values.get('equipment_id')
+                'eName' : request.values.get('eName'),
+                'eLocation' : request.values.get('eLocation'),
+                'Quantity' : request.values.get('Quantity'),
+                'Note' : request.values.get('Note'),
+                'lName' : request.values.get('lName'),
+                'eId' : request.values.get('eId')                
             }
         )
         return redirect(url_for('manager_new.equipmentManager'))
     else:
         equipment = show_equipment_info()
-        return render_template('edit_equipment.html', data=equipment)
+        logistic_data = Logistic.get_all_logistic()
+        return render_template('edit_equipment.html', equipment=equipment, logistic_data=logistic_data)
 
 def show_equipment_info():
-    equipment_id = request.args['equipment_id']
-    data = Equipment.get_equipment(equipment_id)
-    equipment_name = data[1]
-    equipment_status = data[2]
-    equipment_description = data[3]
+    eId = request.args['eId']
+    record = Equipment.get_equipment(eId)
+    data = record[0]
+    eName = data[1]
+    eLocation = data[2]
+    Quantity = data[3]
+    Note = data[4]
+    lName = data[5]
     
     equipment = {
-        '設備編號': equipment_id,
-        '設備名稱': equipment_name,
-        '設備狀態': equipment_status,
-        '設備描述': equipment_description
+        'eId': eId,
+        'eName': eName,
+        'eLocation': eLocation,
+        'Quantity': Quantity,
+        'Note': Note,
+        'lName': lName
     }
     return equipment
 
