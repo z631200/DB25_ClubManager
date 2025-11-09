@@ -6,14 +6,6 @@ analysis_new = Blueprint('analysis_new', __name__, template_folder='../templates
 
 @analysis_new.route('/dashboard', methods=['GET'])
 def dashboard():
-    """
-    後台資料分析儀表板：
-    - participants_data: 各活動參與人數
-    - activity_detail:   各活動節目與表演者明細（依 aSeq、programTime 排序）
-    - equipment_usage:   各節目使用器材與數量
-    - equipment_belongs: 後勤組別 -> 器材/成員 的歸屬一覽
-    - student_participation:（可選）用 ?sName= 指定學生，顯示其參與活動/節目
-    """
     # 1) 各活動參加人數
     participants_rows = Analysis.count_participants()
     participants_data = [
@@ -44,7 +36,7 @@ def dashboard():
     if s_name:
         sp_rows = Analysis.student_participation(s_name)
         student_participation = [
-            {'學生': r[0], '活動名稱': r[1], '節目名稱': r[2], '時間': r[3]} for r in sp_rows
+            {'學號': r[0], '學生': r[1], '活動名稱': r[2]} for r in sp_rows
         ]
 
     return render_template(

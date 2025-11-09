@@ -158,23 +158,21 @@
         <table class="table table-bordered">
           <thead class="table-light">
             <tr>
+              <th>學號</th>
               <th>學生</th>
               <th>活動名稱</th>
-              <th>節目名稱</th>
-              <th>時間</th>
             </tr>
           </thead>
           <tbody>
             {% for r in student_participation %}
             <tr>
+              <td>{{ r.學號 }}</td>
               <td>{{ r.學生 }}</td>
               <td>{{ r.活動名稱 }}</td>
-              <td>{{ r.節目名稱 }}</td>
-              <td>{{ r.時間 }}</td>
             </tr>
             {% endfor %}
             {% if student_participation|length == 0 %}
-            <tr><td colspan="4" class="text-center text-muted">尚未查詢或無資料</td></tr>
+            <tr><td colspan="3" class="text-center text-muted">尚未查詢或無資料</td></tr>
             {% endif %}
           </tbody>
         </table>

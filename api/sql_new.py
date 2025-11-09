@@ -89,7 +89,7 @@ class Student:
     @staticmethod
     def get_all_student():
         sql = 'SELECT * FROM student'
-        return DB.fetchall(sql, ('student',))
+        return DB.fetchall(sql)
     
     @staticmethod
     def get_student(sId):
@@ -101,16 +101,16 @@ class Student:
     def create_student(input_data):
         sql = '''
             INSERT INTO Student (sId, sName, gender, Grade, Department, isMember, lName)
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            VALUES (%s, %s, %s, %s, %s, %s, NULLIF(%s, ''))
         '''
         DB.execute_input(sql, (
-            input_data['sId'],          # 學號，例如 'S004'
-            input_data['sName'],        # 姓名，例如 '林美惠'
-            input_data['gender'],       # 性別，例如 '女'
-            input_data['grade'],        # 年級，例如 2
-            input_data['department'],   # 系所，例如 '企業管理系'
-            input_data['isMember'],     # 是否為社員 (True/False)
-            input_data['logistic']      # 所屬後勤組別，例如 '舞台組'
+            input_data['sId'],
+            input_data['sName'],
+            input_data['gender'],
+            input_data['grade'],
+            input_data['department'],
+            input_data['isMember'],
+            input_data['logistic']
         ))
 
     @staticmethod
@@ -122,7 +122,7 @@ class Student:
     def update_student(input_data):
         sql = '''
             UPDATE Student SET sName = %s, gender = %s, grade = %s,
-              department = %s, isMember = %s, lName = %s WHERE sId = %s
+              department = %s, isMember = %s, lName = NULLIF(%s, '') WHERE sId = %s
         '''
         DB.execute_input(sql, (
             input_data['sName'],
@@ -180,15 +180,15 @@ class Equipment:
         return DB.fetchall(sql)
     
     @staticmethod
-    def get_equipment(eId):
-        sql = 'SELECT * FROM Equipment WHERE eId = %s'
-        return DB.fetchall(sql, (eId,))
+    def get_equipment(eID):
+        sql = 'SELECT * FROM Equipment WHERE eID = %s'
+        return DB.fetchall(sql, (eID,))
 
     @staticmethod
     def create_equipment(input_data):
         sql = '''
-            INSERT INTO Equipment (eId, eName, eLocation, Quantity, Note, lName)
-            VALUES (%s, %s, %s, %s, %s, %s)
+            INSERT INTO Equipment (eID, eName, eLocation, Quantity, Note, lName)
+            VALUES (%s, %s, %s, %s, %s, NULLIF(%s, ''))
         '''
         DB.execute_input(sql, (
             input_data['eId'],
@@ -200,15 +200,15 @@ class Equipment:
         ))
     
     @staticmethod
-    def delete_equipment(eId):
-        sql = 'DELETE FROM Equipment WHERE eId = %s'
-        DB.execute_input(sql, (eId,))
+    def delete_equipment(eID):
+        sql = 'DELETE FROM Equipment WHERE eID = %s'
+        DB.execute_input(sql, (eID,))
 
     @staticmethod
     def update_equipment(input_data):
         sql = '''
             UPDATE Equipment SET eName = %s, eLocation = %s, Quantity = %s,
-              Note = %s, lName = %s WHERE eId = %s
+              Note = %s, lName = NULLIF(%s, '') WHERE eID = %s
         '''
         DB.execute_input(sql, (
             input_data['eName'],
@@ -370,14 +370,14 @@ class PerformProgram:
 
     @staticmethod
     def get_all_perform():
-        sql = 'SELECT * FROM Perform'
+        sql = 'SELECT * FROM StudentPerform'
         return DB.fetchall(sql)
     
     # @staticmethod
     # def get_perform_by_student(sId):
     #     sql = '''
     #         SELECT p.sID, s.sName
-    #         FROM Perform p
+    #         FROM StudentPerform p
     #         JOIN Student s ON p.sID = s.sID
     #         WHERE p.sID = %s
     #     '''
@@ -387,7 +387,7 @@ class PerformProgram:
     def get_perform_by_programTime(aSeq, programTime):
         sql = '''
             SELECT p.sID, s.sName
-            FROM Perform p
+            FROM StudentPerform p
             JOIN Student s ON p.sID = s.sID
             WHERE p.aSeq = %s AND p.programTime = %s
         '''
@@ -397,7 +397,7 @@ class PerformProgram:
     def get_perform(sId, aSeq, programTime):
         sql = '''
             SELECT p.sID, s.sName
-            FROM Perform p
+            FROM StudentPerform p
             JOIN Student s ON p.sID = s.sID
             WHERE p.sID = %s AND p.aSeq = %s AND p.programTime = %s
         '''
@@ -405,7 +405,7 @@ class PerformProgram:
     
     @staticmethod
     def create_perform(input_data):
-        sql = 'INSERT INTO Perform (sId, aSeq, programTime) VALUES (%s, %s, %s)'
+        sql = 'INSERT INTO StudentPerform (sId, aSeq, programTime) VALUES (%s, %s, %s)'
         DB.execute_input(sql, (
             input_data['sId'],
             input_data['aSeq'],
@@ -413,45 +413,45 @@ class PerformProgram:
         ))      
 
     @staticmethod
-    def delete_perform(sId, aSeq, performTime):
-        sql = 'DELETE FROM Perform WHERE aSeq = %s AND sId = %s AND programTime = %s'
-        DB.execute_input(sql, (aSeq, sId, performTime))
+    def delete_perform(sId, aSeq, programTime):
+        sql = 'DELETE FROM StudentPerform WHERE aSeq = %s AND sId = %s AND programTime = %s'
+        DB.execute_input(sql, (aSeq, sId, programTime))
 
 
 class UseEquipment:
     @staticmethod
     def get_all_use_equipment():
-        sql = 'SELECT * FROM Use'
+        sql = 'SELECT * FROM EquipmentUse'
         return DB.fetchall(sql)
     
     @staticmethod
     def get_use_equipment_by_program(aSeq, programTime):
         sql = '''
-            SELECT e.eId, e.eName, e.eLocation, e.Quantity, e.Note, e.lName
-            FROM Use u
+            SELECT e.eID, e.eName, e.eLocation, e.Quantity, e.Note, e.lName
+            FROM EquipmentUse u
             JOIN Equipment e
-            ON u.eId = e.eId
+            ON u.eID = e.eID
             WHERE u.aSeq = %s
             AND u.programTime = %s
         '''
         return DB.fetchall(sql, (aSeq, programTime, ))
     
     @staticmethod
-    def get_use_equipment(eId, aSeq, programTime):
+    def get_use_equipment(eID, aSeq, programTime):
         sql = '''
-            SELECT e.eId, e.eName, e.eLocation, e.Quantity, e.Note, e.lName
-            FROM Use u
+            SELECT e.eID, e.eName, e.eLocation, e.Quantity, e.Note, e.lName
+            FROM EquipmentUse u
             JOIN Equipment e
-            ON u.eId = e.eId
-            WHERE e.eId = %s
+            ON u.eID = e.eID
+            WHERE e.eID = %s
             AND u.aSeq = %s
             AND u.programTime = %s
         '''
-        return DB.fetchall(sql, (eId, aSeq, programTime, ))
+        return DB.fetchall(sql, (eID, aSeq, programTime, ))
     
     @staticmethod
     def create_use_equipment(input_data):
-        sql = 'INSERT INTO Use (eId, aSeq, programTime) VALUES (%s, %s, %s)'
+        sql = 'INSERT INTO EquipmentUse (eID, aSeq, programTime) VALUES (%s, %s, %s)'
         DB.execute_input(sql, (
             input_data['eId'],
             input_data['aSeq'],
@@ -459,9 +459,9 @@ class UseEquipment:
         ))  
 
     @staticmethod
-    def delete_use_equipment(eId, aSeq, programTime):
-        sql = 'DELETE FROM Use WHERE eId = %s AND aSeq = %s AND programTime = %s'
-        DB.execute_input(sql, (eId, aSeq, programTime))
+    def delete_use_equipment(eID, aSeq, programTime):
+        sql = 'DELETE FROM EquipmentUse WHERE eID = %s AND aSeq = %s AND programTime = %s'
+        DB.execute_input(sql, (eID, aSeq, programTime))
 
 
 class Analysis:
@@ -481,7 +481,7 @@ class Analysis:
             SELECT A.aName AS 活動名稱, P.Song AS 節目名稱, S.sName AS 表演者
             FROM Activity AS A
             JOIN Program AS P ON A.aSeq = P.aSeq
-            JOIN Perform AS F ON P.aSeq = F.aSeq AND P.programTime  = F.programTime
+            JOIN StudentPerform AS F ON P.aSeq = F.aSeq AND P.programTime  = F.programTime
             JOIN Student AS S ON F.sID = S.sID
             ORDER BY A.aSeq, P.programTime;
         '''
@@ -492,23 +492,21 @@ class Analysis:
         sql = '''
             SELECT P.Song AS 節目名稱, E.eName AS 器材名稱, E.Quantity AS 數量
             FROM Program AS P
-            JOIN Use AS U ON P.aSeq = U.aSeq AND P.programTime = U.programTime
+            JOIN EquipmentUse AS U ON P.aSeq = U.aSeq AND P.programTime = U.programTime
             JOIN Equipment AS E ON U.eID = E.eID
             ORDER BY P.Song;
         '''
         return DB.fetchall(sql)
     
     @staticmethod
-    def student_participation(sName):
-        sql = '''
-            SELECT S.sName, A.aName AS 活動名稱, P.Song AS 節目名稱, P.programTime AS 時間
-            FROM Student AS S
-            JOIN StudentJoin AS SJ ON S.sID = SJ.sID
-            JOIN Activity AS A ON SJ.aSeq = A.aSeq
-            JOIN Perform AS F ON S.sID = F.sID
-            JOIN Program AS P ON F.aSeq = P.aSeq AND F.programTime = P.programTime
-            WHERE S.sName = %s;
-        '''
+    def student_participation(sName): 
+        sql = ''' 
+            SELECT S.sID, S.sName, A.aName AS 活動名稱
+            FROM Student AS S 
+            JOIN StudentJoin AS SJ ON S.sID = SJ.sID 
+            JOIN Activity AS A ON SJ.aSeq = A.aSeq 
+            WHERE S.sName = %s; 
+        ''' 
         return DB.fetchall(sql, (sName,))
     
     @staticmethod
@@ -516,41 +514,8 @@ class Analysis:
         sql = '''
             SELECT L.lName AS 組別, E.eName AS 器材名稱, S.sName AS 成員
             FROM Logistic AS L
-            LEFT JOIN Equipment AS E ON L.lName = E.lName
+            JOIN Equipment AS E ON L.lName = E.lName
             LEFT JOIN Student AS S ON L.lName = S.lName
-            ORDER BY L.lName;
+            ORDER BY L.lName, E.eName;
         '''
         return DB.fetchall(sql)
-
-    # @staticmethod
-    # def month_price(i):
-    #     sql = 'SELECT EXTRACT(MONTH FROM ordertime), SUM(price) FROM order_list WHERE EXTRACT(MONTH FROM ordertime) = %s GROUP BY EXTRACT(MONTH FROM ordertime)'
-    #     return DB.fetchall(sql, (i,))
-
-    # @staticmethod
-    # def month_count(i):
-    #     sql = 'SELECT EXTRACT(MONTH FROM ordertime), COUNT(oid) FROM order_list WHERE EXTRACT(MONTH FROM ordertime) = %s GROUP BY EXTRACT(MONTH FROM ordertime)'
-    #     return DB.fetchall(sql, (i,))
-
-    # @staticmethod
-    # def category_sale():
-    #     sql = 'SELECT SUM(total), category FROM product, record WHERE product.pid = record.pid GROUP BY category'
-    #     return DB.fetchall(sql)
-
-    # @staticmethod
-    # def member_sale():
-    #     sql = '''
-    #     SELECT SUM(price), member.mid, (member.lname || member.fname) AS name 
-    #     FROM order_list, member 
-    #     WHERE order_list.mid = member.mid AND member.identity = %s GROUP BY member.mid, name ORDER BY SUM(price) DESC
-    #     '''
-    #     return DB.fetchall(sql, ('user',))
-
-    # @staticmethod
-    # def member_sale_count():
-    #     sql = '''
-    #     SELECT COUNT(*), member.mid, (member.lname || member.fname) AS name 
-    #     FROM order_list, member 
-    #     WHERE order_list.mid = member.mid AND member.identity = %s GROUP BY member.mid, name ORDER BY COUNT(*) DESC
-    #     '''
-    #     return DB.fetchall(sql, ('user',))
