@@ -207,7 +207,7 @@
       </center>
 
       <!-- 表格 -->
-      <div class="table-responsive mt-3">
+      <!-- <div class="table-responsive mt-3">
         <table class="table table-bordered">
           <thead class="table-light">
             <tr>
@@ -231,7 +231,7 @@
             {% endif %}
           </tbody>
         </table>
-      </div>
+      </div> -->
     </div>
 
   </div>
@@ -332,7 +332,7 @@
     }
   }
 
-  // ======== 圖 3：單一活動各系所參與人數 ========
+  // ======== 圖 3：單一活動各系所參與人數（圓餅圖） ========
   const deptRows = JSON.parse('{{ department_count | tojson | safe }}');   // 後端傳入
   const deptLabels = deptRows.map(r => r['系所']);
   const deptCounts = deptRows.map(r => Number(r['人數'] || 0));
@@ -340,27 +340,42 @@
   const chartDomc = document.getElementById('chart-department');
   const myChartc = echarts.init(chartDomc);
 
+  // 將資料組成 ECharts pie 格式
+  const pieData = deptRows.map(r => ({
+    name: r['系所'],
+    value: Number(r['人數'] || 0)
+  }));
+
   const optionc = {
-    title: { text: '單一活動各系所參與人數' },
-    tooltip: { trigger: 'axis' },
-    xAxis: {
-      type: 'category',
-      data: deptLabels,
-      axisLabel: {
-        interval: 0,
-        rotate: 30,
-        hideOverlap: true,
-        formatter: (val) => (val.length > 10 ? val.slice(0, 10) + '…' : val)
-      }
+    title: { 
+      text: '單一活動各系所參與人數（圓餅圖）',
+      left: 'center'
     },
-    yAxis: { type: 'value', name: '人數', minInterval: 1 },
+    tooltip: { 
+      trigger: 'item',
+      formatter: '{b}：{c} 人 ({d}%)'
+    },
+    legend: { 
+      orient: 'vertical',
+      left: 'left',
+      top: 'middle'
+    },
     series: [{
-      name: '人數',
-      type: 'bar',
-      data: deptCounts,
-      label: { show: true, position: 'top' }
+      name: '系所',
+      type: 'pie',
+      radius: ['35%', '70%'], // 內外半徑，可調整成甜甜圈圖效果
+      avoidLabelOverlap: false,
+      label: {
+        show: true,
+        formatter: '{b}: {c}人\n({d}%)'
+      },
+      labelLine: { show: true },
+      data: pieData
     }],
-    grid: { left: 50, right: 30, bottom: 80, top: 60 }
+    color: [
+      '#5470C6', '#91CC75', '#EE6666', '#73C0DE',
+      '#FAC858', '#3BA272', '#FC8452', '#9A60B4', '#EA7CCC'
+    ]
   };
 
   optionc && myChartc.setOption(optionc);
