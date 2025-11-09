@@ -22,7 +22,7 @@
   <br/>
 
   <div class="tab-content" id="nav-tabContent">
-    <!-- 活動參與人數（圖） -->
+    <!-- 活動參與人數 -->
     <div class="tab-pane fade show active" id="pane-participants" role="tabpanel" aria-labelledby="tab-participants">
       <center>
         <div id="chart-participants" class="container-fluid" style=" height: 500px;"></div>
@@ -50,7 +50,7 @@
       </div> -->
     </div>
 
-    <!-- 活動節目明細（表） -->
+    <!-- 活動節目明細 -->
     <div class="tab-pane fade" id="pane-activity-detail" role="tabpanel" aria-labelledby="tab-activity-detail">
       <div class="table-responsive">
         <table class="table table-bordered">
@@ -58,6 +58,7 @@
             <tr>
               <th>活動名稱</th>
               <th>節目名稱</th>
+              <th>節目時間</th>
               <th>表演者</th>
             </tr>
           </thead>
@@ -66,6 +67,7 @@
             <tr>
               <td>{{ r.活動名稱 }}</td>
               <td>{{ r.節目名稱 }}</td>
+              <td>{{ r.時間 }}</td>
               <td>{{ r.表演者 }}</td>
             </tr>
             {% endfor %}
@@ -77,7 +79,7 @@
       </div>
     </div>
 
-    <!-- 節目器材使用（圖 + 表） -->
+    <!-- 節目器材使用 -->
     <div class="tab-pane fade" id="pane-equipment-usage" role="tabpanel" aria-labelledby="tab-equipment-usage">
       <center>
         <div id="chart-equipment" class="container-fluid" style="height: 500px;"></div>
@@ -108,7 +110,7 @@
       <small class="text-muted">圖表為前端將同一節目各器材「數量」加總之視覺化。</small> -->
     </div>
 
-    <!-- 後勤歸屬（表） -->
+    <!-- 後勤歸屬 -->
     <div class="tab-pane fade" id="pane-equipment-belongs" role="tabpanel" aria-labelledby="tab-equipment-belongs">
       <div class="table-responsive">
         <table class="table table-bordered">
@@ -181,7 +183,7 @@
   </div>
 </div>
 
-<!-- ECharts：兩張圖（參與人數、器材加總） -->
+<!-- ECharts -->
 <script>
   // 後端資料
   const participants = JSON.parse('{{ participants_data | tojson | safe }}');
@@ -210,7 +212,6 @@
   };
 
   // ========= 圖 2：各節目器材總量（前端彙總） =========
-  // equipment_usage: [{ 節目名稱, 器材名稱, 數量 }, ...]
   const usageByProgram = {};
   equipmentUsageRows.forEach(r => {
     const prog = r['節目名稱'] || '(未命名節目)';
@@ -227,7 +228,16 @@
   const optionb = {
     title: { text: '各節目器材總量（加總視覺化）' },
     tooltip: { trigger: 'axis' },
-    xAxis: { type: 'category', data: programNames },
+    xAxis: {
+      type: 'category',
+      data: programNames,
+      axisLabel: {
+        interval: 0,
+        rotate: 45,
+        hideOverlap: true,
+        formatter: (val) => (val.length > 16 ? val.slice(0, 16) + '…' : val)
+      }
+    },
     yAxis: { type: 'value', name: '器材數量' },
     series: [{
       name: '器材總量',
@@ -235,13 +245,13 @@
       data: programTotals,
       label: { show: true, position: 'top' }
     }],
-    grid: { left: 50, right: 30, bottom: 80, top: 60 }
+    grid: { left: 50, right: 30, bottom: 110, top: 60 }
   };
+
 
   optiona && myCharta.setOption(optiona);
   optionb && myChartb.setOption(optionb);
 
-  // 讓圖在分頁切換後能正確 resize
   const tabEls = document.querySelectorAll('button[data-bs-toggle="tab"]');
   tabEls.forEach(el => {
     el.addEventListener('shown.bs.tab', () => {

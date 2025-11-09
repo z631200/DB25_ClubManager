@@ -15,7 +15,7 @@ def dashboard():
     # 2) 活動節目明細（活動名稱、節目名稱、表演者）
     act_detail_rows = Analysis.activity_detail()
     activity_detail = [
-        {'活動名稱': r[0], '節目名稱': r[1], '表演者': r[2]} for r in act_detail_rows
+        {'活動名稱': r[0], '節目名稱': r[1], '時間': r[2], '表演者': r[3]} for r in act_detail_rows
     ]
 
     # 3) 節目器材使用（節目名稱、器材名稱、數量）

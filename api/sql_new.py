@@ -95,6 +95,11 @@ class Student:
     def get_student(sId):
         sql = 'SELECT * FROM student WHERE sId = %s'
         return DB.fetchall(sql, (sId,))
+    
+    @staticmethod
+    def get_student_isMember():
+        sql = 'SELECT * FROM student WHERE isMember = True'
+        return DB.fetchall(sql)
 
 
     @staticmethod
@@ -478,14 +483,24 @@ class Analysis:
     @staticmethod
     def activity_detail():
         sql = '''
-            SELECT A.aName AS 活動名稱, P.Song AS 節目名稱, S.sName AS 表演者
+            SELECT 
+                A.aName AS 活動名稱, 
+                P.Song AS 節目名稱, 
+                P.programTime AS 節目時間,
+                string_agg(S.sName, '、' ORDER BY S.sName) AS 表演者
             FROM Activity AS A
-            JOIN Program AS P ON A.aSeq = P.aSeq
-            JOIN StudentPerform AS F ON P.aSeq = F.aSeq AND P.programTime  = F.programTime
-            JOIN Student AS S ON F.sID = S.sID
-            ORDER BY A.aSeq, P.programTime;
+            JOIN Program AS P 
+                ON A.aSeq = P.aSeq
+            JOIN StudentPerform AS F 
+                ON P.aSeq = F.aSeq 
+                AND P.programTime = F.programTime
+            JOIN Student AS S 
+                ON F.sID = S.sID
+            GROUP BY A.aName, P.Song, P.programTime
+            ORDER BY A.aName, P.programTime;
         '''
         return DB.fetchall(sql)
+
     
     @staticmethod
     def equipment_usage():
@@ -512,10 +527,16 @@ class Analysis:
     @staticmethod
     def equipment_belongs():
         sql = '''
-            SELECT L.lName AS 組別, E.eName AS 器材名稱, S.sName AS 成員
+            SELECT 
+                L.lName AS 組別, 
+                E.eName AS 器材名稱, 
+                COALESCE(string_agg(S.sName, '、' ORDER BY S.sName), '（無成員）') AS 成員
             FROM Logistic AS L
-            JOIN Equipment AS E ON L.lName = E.lName
-            LEFT JOIN Student AS S ON L.lName = S.lName
+            JOIN Equipment AS E 
+                ON L.lName = E.lName
+            LEFT JOIN Student AS S 
+                ON L.lName = S.lName
+            GROUP BY L.lName, E.eName
             ORDER BY L.lName, E.eName;
         '''
         return DB.fetchall(sql)
