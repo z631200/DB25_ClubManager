@@ -508,6 +508,14 @@ def programManager():
             return redirect(url_for('manager_new.programManager', aSeq=aSeq))
         aSeq, programTime = composite_key.split('|', 1)
         return redirect(url_for('manager_new.performManager', aSeq=aSeq, programTime=programTime))
+        
+    elif 'use' in request.values:
+        composite_key = request.values.get('use')
+        if composite_key is None:
+            flash('無法查看使用器材，缺少必要的識別資訊。')
+            return redirect(url_for('manager_new.programManager', aSeq=aSeq))
+        aSeq, programTime = composite_key.split('|', 1)
+        return redirect(url_for('manager_new.useManager', aSeq=aSeq, programTime=programTime))
 
     program_data = program(aSeq)
     return render_template('programManager.html', program_data=program_data, aSeq=aSeq)
@@ -662,7 +670,6 @@ def add_activityJoin():
 # =================== Program Perform Management =====================
 @manager_new.route('/performManager', methods=['GET', 'POST'])
 def performManager():
-    print(f"\n{request.values}\n")
     aSeq = request.values.get('aSeq')
     programTime = request.values.get('programTime')
     if not aSeq and not programTime:
@@ -704,13 +711,11 @@ def add_perform():
             return redirect(url_for('manager_new.performManager', aSeq=aSeq, programTime=programTime))
 
         sId_existing = Student.get_student(sId)
-        print(f"check {sId_existing}")
         if not sId_existing:
             flash('failed with ForeignKeyViolation')
             return redirect(url_for('manager_new.performManager', aSeq=aSeq, programTime=programTime))
 
         existing = PerformProgram.get_perform(sId, aSeq, programTime)
-        print(f"check {existing}")
         if existing:
             flash('failed with UniqueViolation')
             return redirect(url_for('manager_new.performManager', aSeq=aSeq, programTime=programTime))
@@ -725,4 +730,70 @@ def add_perform():
 
         return redirect(url_for('manager_new.performManager', aSeq=aSeq, programTime=programTime))
 
-    return render_template('performManager.html')
+
+# =================== use Management =====================
+@manager_new.route('/useManager', methods=['GET', 'POST'])
+def useManager():
+    aSeq = request.values.get('aSeq')
+    programTime = request.values.get('programTime')
+    if not aSeq and not programTime:
+        flash('缺少活動編號與表演時間')
+        return redirect(url_for('manager_new.programManager'))
+    
+    if 'delete' in request.values:
+        eId = request.values.get('delete')
+        UseEquipment.delete_use_equipment(eId, aSeq, programTime)
+        return redirect(url_for('manager_new.useManager', aSeq=aSeq, programTime=programTime))
+
+    use_data = use(aSeq, programTime)
+    return render_template('programUseManager.html', use_data=use_data, aSeq=aSeq, programTime=programTime)
+
+def use(aSeq, programTime):
+    use_row = UseEquipment.get_use_equipment_by_program(aSeq, programTime)
+    use_data = []
+    for i in use_row:
+        use = {
+            '編號': i[0],
+            '器材名稱': i[1],
+            '數量': i[2], 
+            '位置': i[3], 
+            '備註': i[4], 
+            '組別名稱': i[5], 
+        }
+        use_data.append(use)
+    return use_data
+
+@manager_new.route('/add_use', methods=['POST'])
+def add_use():
+    if request.method == 'POST':
+        eId = request.values.get('eId')
+        aSeq = request.values.get('aSeq')
+        programTime = request.values.get('programTime')
+        
+        # validation, can be extended
+        if eId is None:
+            flash('所有欄位都是必填的，請確認輸入內容。')
+            return redirect(url_for('manager_new.useManager', aSeq=aSeq, programTime=programTime))
+        if len(eId) < 1:
+            flash('器材編號不可為空')
+            return redirect(url_for('manager_new.useManager', aSeq=aSeq, programTime=programTime))
+
+        eId_existing = Equipment.get_equipment(eId)
+        if not eId_existing:
+            flash('failed with ForeignKeyViolation')
+            return redirect(url_for('manager_new.useManager', aSeq=aSeq, programTime=programTime))
+
+        existing = UseEquipment.get_use_equipment(eId, aSeq, programTime)
+        if existing:
+            flash('failed with UniqueViolation')
+            return redirect(url_for('manager_new.useManager', aSeq=aSeq, programTime=programTime))
+
+        UseEquipment.create_use_equipment(
+            {
+                'eId' : eId,
+                'aSeq' : aSeq,
+                'programTime' : programTime
+            }
+        )
+
+        return redirect(url_for('manager_new.useManager', aSeq=aSeq, programTime=programTime))

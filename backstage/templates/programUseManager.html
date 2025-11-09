@@ -1,0 +1,145 @@
+{% extends "backstage.html" %}
+{% block head %}
+{{ super() }}
+{% endblock head %}
+
+{% block title %} 節目器材管理 {% endblock title %}
+
+{% block content %}
+
+{# ---- Flash Messages ---- #}
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    {% for msg in messages %}
+      {% if msg == 'No permission' %}
+        <script>alert('您沒有使用者的權限喔！');</script>
+      {% elif msg == 'failed' %}
+        <script>alert('有使用者有使用到這筆資料，所以不能刪除');</script>
+      {% elif msg == 'failed with UniqueViolation' %}
+        <script>alert('該器材已在此表演名單中。');</script>
+      {% elif msg == 'failed with ForeignKeyViolation' %}
+        <script>alert('該器材不存在於 Equipment 表中。');</script>
+      {% else %}
+        <div class="alert alert-info" role="alert">{{ msg }}</div>
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<script>
+  $(document).ready(function(){
+    $("#keyword").on("keyup", function() {
+      var value = $(this).val().toLowerCase();
+      $("#useEquipment tr").filter(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+      });
+    });
+  });
+</script>
+&nbsp;
+&nbsp;
+<div class="d-flex justify-content-between container-xxl my-2">
+  <div class="d-flex col-sm-6">
+    <span class="input-group-text" id="basic-addon1">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+           fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+      </svg>
+    </span>
+    <input class="form-control me-2" id="keyword" placeholder="搜尋使用器材" aria-label="Search">
+  </div>
+
+  <div>
+    <span class="me-2 align-middle">
+      活動編號：<strong>{{ aSeq }}</strong>
+      表演時間：<strong>{{ programTime }}</strong>
+    </span>
+    <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#addUseModal">
+      新增使用器材
+    </button>
+  </div>
+</div>
+
+<form method="post" action="{{ url_for('manager_new.add_use') }}">
+  <div class="modal fade" id="addUseModal" data-bs-backdrop="static" data-bs-keyboard="false"
+       tabindex="-1" aria-labelledby="addUseLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addUseLabel">新增使用器材</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="關閉"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" name="aSeq" value="{{ aSeq }}">
+          <input type="hidden" name="programTime" value="{{ programTime }}">
+          <div class="mb-3">
+            <label class="form-label">活動編號</label>
+            <input type="text" class="form-control" value="{{ aSeq }}" readonly>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">表演時間</label>
+            <input type="text" class="form-control" value="{{ programTime }}" readonly>
+          </div>          
+          <div class="mb-3">
+            <label for="inputEquipmentID" class="form-label">器材編號</label>
+            <input type="text" class="form-control" id="inputEquipmentID" name="eId" required>
+            <div class="form-text">請輸入已存在於 Equipment 表中的器材編號（如 E001）。</div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">取消</button>
+          <button type="submit" class="btn btn-success">確定新增</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+<div class="container-xxl mt-3">
+  <form method="post" action="{{ url_for('manager_new.useManager') }}">
+    <input type="hidden" name="aSeq" value="{{ aSeq }}">
+    <input type="hidden" name="programTime" value="{{ programTime }}">
+    <table id="manager_new" class="table table-bordered">
+      <thead>
+        <tr>
+          <th width="10%"><center>器材編號</center></th>
+          <th width="15%"><center>器材名稱</center></th>
+          <th width="10%"><center>位置</center></th>
+          <th width="5%"><center>數量</center></th>
+          <th width="15%"><center>備註</center></th>
+          <th width="10%"><center>管理組別</center></th>  
+          <th width="15%"><center>資料操作</center></th>
+        </tr>
+      </thead>
+      <tbody id="useEquipment">
+        {% for i in use_data %}
+          <tr>
+            <td><center>{{ i.編號 }}</center></td>
+            <td><center>{{ i.器材名稱 }}</center></td>
+            <td><center>{{ i.數量 }}</center></td>
+            <td><center>{{ i.位置 }}</center></td>
+            <td><center>{{ i.備註 }}</center></td>
+            <td><center>{{ i.組別名稱 }}</center></td>
+            <td>
+              <center>
+                <button type="submit"
+                        name="delete"
+                        value="{{ i.編號 }}"
+                        onclick="return confirm('你確定要從本活動名單移除「{{ i.器材名稱 }}（{{ i.編號 }}）」嗎？')"
+                        class="btn btn-danger">
+                  移除
+                </button>
+              </center>
+            </td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="7"><center>目前尚無使用器材</center></td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </form>
+</div>
+
+{% endblock content %}

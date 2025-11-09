@@ -418,35 +418,51 @@ class PerformProgram:
         DB.execute_input(sql, (aSeq, sId, performTime))
 
 
-class UserEquipment:
+class UseEquipment:
     @staticmethod
-    def get_all_user_equipment():
-        sql = ''
+    def get_all_use_equipment():
+        sql = 'SELECT * FROM Use'
         return DB.fetchall(sql)
     
-    # def get_user_equipment(ueid):
-    #     sql = ''
-    #     return DB.fetchall(sql)
+    @staticmethod
+    def get_use_equipment_by_program(aSeq, programTime):
+        sql = '''
+            SELECT e.eId, e.eName, e.eLocation, e.Quantity, e.Note, e.lName
+            FROM Use u
+            JOIN Equipment e
+            ON u.eId = e.eId
+            WHERE u.aSeq = %s
+            AND u.programTime = %s
+        '''
+        return DB.fetchall(sql, (aSeq, programTime, ))
     
-    # def create_user_equipment(input_data):
-    #     sql = ''
-    #     DB.execute_input(sql, (
-    #         input_data['field1'],
-    #         input_data['field2'],
-    #         input_data['field3']
-    #     ))
+    @staticmethod
+    def get_use_equipment(eId, aSeq, programTime):
+        sql = '''
+            SELECT e.eId, e.eName, e.eLocation, e.Quantity, e.Note, e.lName
+            FROM Use u
+            JOIN Equipment e
+            ON u.eId = e.eId
+            WHERE e.eId = %s
+            AND u.aSeq = %s
+            AND u.programTime = %s
+        '''
+        return DB.fetchall(sql, (eId, aSeq, programTime, ))
     
-    # def delete_user_equipment(ueid):
-    #     sql = ''
-    #     DB.execute_input(sql, (ueid,))
+    @staticmethod
+    def create_use_equipment(input_data):
+        sql = 'INSERT INTO Use (eId, aSeq, programTime) VALUES (%s, %s, %s)'
+        DB.execute_input(sql, (
+            input_data['eId'],
+            input_data['aSeq'],
+            input_data['programTime']
+        ))  
 
-    # def edit_user_equipment(input_data):
-    #     sql = ''
-    #     DB.execute_input(sql, (
-    #         input_data['field1'],
-    #         input_data['field2'],
-    #         input_data['ueid']
-    #     ))
+    @staticmethod
+    def delete_use_equipment(eId, aSeq, programTime):
+        sql = 'DELETE FROM Use WHERE eId = %s AND aSeq = %s AND programTime = %s'
+        DB.execute_input(sql, (eId, aSeq, programTime))
+
 
 class Analysis:
     @staticmethod
