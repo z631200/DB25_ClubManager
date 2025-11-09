@@ -104,7 +104,8 @@
             <th width="15%"><center>活動名稱</center></th>
             <th width="15%"><center>日期</center></th>
             <th width="15%"><center>地點</center></th>
-            <th colspan="3"><center>資料操作</center></th>
+            <th colspan="2"><center>資料操作</center></th>
+            <th colspan="2"><center>查看節目&參加者</center></th>
         </tr>
     </thead>
     <tbody id="activity">
@@ -117,6 +118,8 @@
             <td><center><button type="submit" value="{{i.序號}}" name="edit" class="btn btn-success">編輯活動</button></center></td>
             <td><center><button type="submit" value="{{i.序號}}" name="delete" onclick="return (confirm('你確定要刪除 \'{{ i.活動名稱 }}\' 嗎？'))" class="btn btn-danger">刪除活動</button></center></td>
             <td><center><button type="submit" value="{{i.序號}}" name="view" class="btn btn-info">查看節目</button></center></td>
+            <td><center><button type="submit" value="{{i.序號}}" name="participant" class="btn btn-warning">查看參加者</button></center></td>
+
         </tr>
     {% endfor %}
     </tbody>

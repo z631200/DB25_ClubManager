@@ -308,66 +308,94 @@ class Program:
         ))
 
 
-class ParticipateActivity:
+class StudentJoin:
     @staticmethod
     def get_all_participate_activity():
-        sql = ''
+        sql = 'SELECT * FROM StudentJoin'
         return DB.fetchall(sql)
     
-    def get_participate_activity(iaid):
-        sql = ''
-        return DB.fetchall(sql)
+    @staticmethod
+    def get_participate_activity_by_student(sId):
+        sql = '''
+            SELECT sj.sID, s.sName
+            FROM StudentJoin sj
+            JOIN Student s ON sj.sID = s.sID
+            WHERE sj.sID = %s
+        '''
+        return DB.fetchall(sql, (sId,))
     
-    def create_participate_activity(input_data):
-        sql = ''
-        DB.execute_input(sql, (
-            input_data['field1'],
-            input_data['field2'],
-            input_data['field3']
-        ))
+    @staticmethod
+    def get_participate_activity_by_activity(aSeq):
+        sql = '''
+            SELECT sj.sID, s.sName
+            FROM StudentJoin sj
+            JOIN Student s ON sj.sID = s.sID
+            WHERE sj.aSeq = %s
+        '''
+        return DB.fetchall(sql, (aSeq,))
     
-    def delete_participate_activity(iaid):
-        sql = ''
-        DB.execute_input(sql, (iaid,))
+    @staticmethod
+    def get_participate_activity(aSeq, sId):
+        sql = '''
+            SELECT sj.sID, s.sName
+            FROM StudentJoin sj
+            JOIN Student s ON sj.sID = s.sID
+            WHERE sj.aSeq = %s AND sj.sID = %s
+        '''
+        return DB.fetchall(sql, (aSeq, sId, ))
 
-    def edit_participate_activity(input_data):
-        sql = ''
+    @staticmethod
+    def create_participate_activity(input_data):
+        sql = 'INSERT INTO StudentJoin (aSeq, sId) VALUES (%s, %s)'
         DB.execute_input(sql, (
-            input_data['field1'],
-            input_data['field2'],
-            input_data['iaid']
+            input_data['aSeq'],
+            input_data['sId']
         ))
+    
+    @staticmethod
+    def delete_participate_activity(aSeq, sId):
+        sql = 'DELETE FROM StudentJoin WHERE aSeq = %s AND sId = %s'
+        DB.execute_input(sql, (aSeq, sId, ))
+
+    # def edit_participate_activity(input_data):
+    #     sql = ''
+    #     DB.execute_input(sql, (
+    #         input_data['field1'],
+    #         input_data['field2'],
+    #         input_data['iaid']
+    #     ))
 
 
 class PerformProgram:
+
     @staticmethod
     def get_all_perform_program():
         sql = ''
         return DB.fetchall(sql)
     
-    def get_perform_program(ppid):
-        sql = ''
-        return DB.fetchall(sql)
+    # def get_perform_program(ppid):
+    #     sql = ''
+    #     return DB.fetchall(sql)
     
-    def create_perform_program(input_data):
-        sql = ''
-        DB.execute_input(sql, (
-            input_data['field1'],
-            input_data['field2'],
-            input_data['field3']
-        ))
+    # def create_perform_program(input_data):
+    #     sql = ''
+    #     DB.execute_input(sql, (
+    #         input_data['field1'],
+    #         input_data['field2'],
+    #         input_data['field3']
+    #     ))
     
-    def delete_perform_program(ppid):
-        sql = ''
-        DB.execute_input(sql, (ppid,))
+    # def delete_perform_program(ppid):
+    #     sql = ''
+    #     DB.execute_input(sql, (ppid,))
 
-    def edit_perform_program(input_data):
-        sql = ''
-        DB.execute_input(sql, (
-            input_data['field1'],
-            input_data['field2'],
-            input_data['ppid']
-        ))
+    # def edit_perform_program(input_data):
+    #     sql = ''
+    #     DB.execute_input(sql, (
+    #         input_data['field1'],
+    #         input_data['field2'],
+    #         input_data['ppid']
+    #     ))
 
 
 class UserEquipment:
@@ -376,70 +404,29 @@ class UserEquipment:
         sql = ''
         return DB.fetchall(sql)
     
-    def get_user_equipment(ueid):
-        sql = ''
-        return DB.fetchall(sql)
+    # def get_user_equipment(ueid):
+    #     sql = ''
+    #     return DB.fetchall(sql)
     
-    def create_user_equipment(input_data):
-        sql = ''
-        DB.execute_input(sql, (
-            input_data['field1'],
-            input_data['field2'],
-            input_data['field3']
-        ))
+    # def create_user_equipment(input_data):
+    #     sql = ''
+    #     DB.execute_input(sql, (
+    #         input_data['field1'],
+    #         input_data['field2'],
+    #         input_data['field3']
+    #     ))
     
-    def delete_user_equipment(ueid):
-        sql = ''
-        DB.execute_input(sql, (ueid,))
+    # def delete_user_equipment(ueid):
+    #     sql = ''
+    #     DB.execute_input(sql, (ueid,))
 
-    def edit_user_equipment(input_data):
-        sql = ''
-        DB.execute_input(sql, (
-            input_data['field1'],
-            input_data['field2'],
-            input_data['ueid']
-        ))
-
-
-
-# avoid error in login problem, should be merged later
-class Member:
-    @staticmethod
-    def get_member(account):
-        sql = "SELECT account, password, mid, identity, (lname || fname) AS name FROM member WHERE account = %s"
-        return DB.fetchall(sql, (account,))
-
-    @staticmethod
-    def get_all_account():
-        sql = "SELECT account FROM member"
-        return DB.fetchall(sql)
-
-    @staticmethod
-    def create_member(input_data):
-        sql = 'INSERT INTO member (lname, fname, account, password, identity) VALUES (%s, %s, %s, %s, %s)'
-        DB.execute_input(sql, (
-            input_data['lname'],
-            input_data['fname'],
-            input_data['account'],
-            input_data['password'],
-            input_data['identity']
-        ))
-
-    @staticmethod
-    def delete_product(tno, pid):
-        sql = 'DELETE FROM record WHERE tno = %s and pid = %s'
-        DB.execute_input(sql, (tno, pid))
-
-    @staticmethod
-    def get_order(userid):
-        sql = 'SELECT * FROM order_list WHERE mid = %s ORDER BY ordertime DESC'
-        return DB.fetchall(sql, (userid,))
-
-    @staticmethod
-    def get_role(userid):
-        sql = 'SELECT identity, (lname || fname) AS name FROM member WHERE mid = %s'
-        return DB.fetchone(sql, (userid,))
-
+    # def edit_user_equipment(input_data):
+    #     sql = ''
+    #     DB.execute_input(sql, (
+    #         input_data['field1'],
+    #         input_data['field2'],
+    #         input_data['ueid']
+    #     ))
 
 class Analysis:
     @staticmethod

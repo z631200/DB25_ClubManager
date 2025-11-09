@@ -382,13 +382,17 @@ def activityManager():
     elif 'edit' in request.values:
         aSeq = request.values.get('edit')
         return redirect(url_for('manager_new.edit_activity', aSeq=aSeq))
-
+    
     elif 'view' in request.values:
         aSeq = request.values.get('view')
         return redirect(url_for('manager_new.programManager', aSeq=aSeq))
 
+    elif 'participant' in request.values:
+        aSeq = request.values.get('participant')
+        return redirect(url_for('manager_new.activityJoinManager', aSeq=aSeq))
+
     activity_data = activity()
-    return render_template('activityManager.html', activity_data = activity_data)
+    return render_template('activityManager.html', activity_data=activity_data)
 
 def activity():
     activity_row = Activity.get_all_activity()
@@ -581,3 +585,68 @@ def show_program_info():
         'Song': Song
     }
     return program
+
+# =================== Activity Participant Management =====================
+@manager_new.route('/activityJoinManager', methods=['GET', 'POST'])
+def activityJoinManager():
+    aSeq = request.values.get('aSeq')
+    if not aSeq:
+        flash('缺少活動編號')
+        return redirect(url_for('manager_new.activityManager'))
+    
+    if 'delete' in request.values:
+        sId = request.values.get('delete')
+        StudentJoin.delete_participate_activity(aSeq, sId)
+        return redirect(url_for('manager_new.activityJoinManager', aSeq=aSeq))
+
+    participant_data = activityJoin(aSeq)
+    return render_template('activityJoinManager.html', participants=participant_data, aSeq=aSeq)
+
+def activityJoin(aSeq):
+    activityJoin_row = StudentJoin.get_participate_activity_by_activity(aSeq)
+    participant_data = []
+    for i in activityJoin_row:
+        activityJoin = {
+            '參與學生學號': i[0],
+            '參與學生姓名': i[1]
+        }
+        participant_data.append(activityJoin)
+    return participant_data
+
+@manager_new.route('/add_activityJoin', methods=['POST'])
+def add_activityJoin():
+    if request.method == 'POST':
+        aSeq = request.values.get('aSeq')
+        sId = request.values.get('sId')
+        
+        # validation, can be extended
+        if sId is None:
+            flash('所有欄位都是必填的，請確認輸入內容。')
+            return redirect(url_for('manager_new.activityJoinManager', aSeq=aSeq))
+        if len(sId) < 1:
+            flash('學生學號不可為空。')
+            return redirect(url_for('manager_new.activityJoinManager', aSeq=aSeq))
+
+        sId_existing = Student.get_student(sId)
+        print(f"check {sId_existing}")
+        if not sId_existing:
+            flash('failed with ForeignKeyViolation')
+            return redirect(url_for('manager_new.activityJoinManager', aSeq=aSeq))
+
+        existing = StudentJoin.get_participate_activity(aSeq, sId)
+        print(f"check {existing}")
+        if existing:
+            flash('failed with UniqueViolation')
+            return redirect(url_for('manager_new.activityJoinManager', aSeq=aSeq))
+        
+
+        StudentJoin.create_participate_activity(
+            {
+                'aSeq' : aSeq,
+                'sId' : sId
+            }
+        )
+
+        return redirect(url_for('manager_new.activityJoinManager', aSeq=aSeq))
+
+    return render_template('activityJoinManager.html')
