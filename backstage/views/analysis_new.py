@@ -39,6 +39,17 @@ def dashboard():
             {'學號': r[0], '學生': r[1], '活動名稱': r[2]} for r in sp_rows
         ]
 
+    # 6) 單一活動各系所參與人數：
+    a_seq = request.args.get('aSeq')
+    department_count = []
+    if a_seq:
+        dc_rows = Analysis.get_department_count_by_activity(a_seq)
+        print(dc_rows)
+        department_count = [
+            {'活動編號': r[0], '活動名稱': r[1], '系所': r[2], '人數': r[3]} for r in dc_rows
+        ]
+        print(department_count)
+
     return render_template(
         'dashboard.html',
         participants_data=participants_data,
@@ -46,5 +57,7 @@ def dashboard():
         equipment_usage=equipment_usage,
         equipment_belongs=equipment_belongs,
         student_participation=student_participation,
-        sName=s_name or ""
+        department_count=department_count,
+        aSeq=a_seq or "",
+        sName=s_name or "",
     )

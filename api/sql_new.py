@@ -540,3 +540,21 @@ class Analysis:
             ORDER BY L.lName, E.eName;
         '''
         return DB.fetchall(sql)
+    
+    @staticmethod
+    def get_department_count_by_activity(aSeq):
+        sql = '''
+            SELECT 
+                a.aSeq AS 活動編號,
+                a.aName AS 活動名稱,
+                s.Department AS 系所,
+                COUNT(s.sID) AS 人數
+            FROM Activity a
+            JOIN StudentJoin sj ON a.aSeq = sj.aSeq
+            JOIN Student s ON sj.sID = s.sID
+            WHERE a.aSeq = %s
+            GROUP BY a.aSeq, a.aName, s.Department
+            ORDER BY a.aSeq, 人數 DESC;
+        '''
+        return DB.fetchall(sql, (aSeq,))
+        

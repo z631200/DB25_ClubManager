@@ -14,6 +14,7 @@
         <button class="nav-link" id="tab-activity-detail" data-bs-toggle="tab" data-bs-target="#pane-activity-detail" type="button" role="tab" aria-controls="pane-activity-detail" aria-selected="false">活動節目明細</button>
         <button class="nav-link" id="tab-equipment-usage" data-bs-toggle="tab" data-bs-target="#pane-equipment-usage" type="button" role="tab" aria-controls="pane-equipment-usage" aria-selected="false">節目器材使用</button>
         <button class="nav-link" id="tab-equipment-belongs" data-bs-toggle="tab" data-bs-target="#pane-equipment-belongs" type="button" role="tab" aria-controls="pane-equipment-belongs" aria-selected="false">負責器材</button>
+        <button class="nav-link" id="tab-department-count" data-bs-toggle="tab" data-bs-target="#pane-department-count" type="button" role="tab" aria-controls="pane-department-count" aria-selected="false">單一活動各系所參與人數</button>
         <button class="nav-link" id="tab-student" data-bs-toggle="tab" data-bs-target="#pane-student" type="button" role="tab" aria-controls="pane-student" aria-selected="false">學生參與查詢</button>
       </div>
     </nav>
@@ -137,7 +138,7 @@
       </div>
     </div>
 
-    <!-- 學生參與查詢（表 + 查詢列） -->
+    <!-- 學生參與查詢 -->
     <div class="tab-pane fade" id="pane-student" role="tabpanel" aria-labelledby="tab-student">
       <form class="row g-3 mb-3" method="get" action="{{ url_for('analysis_new.dashboard') }}">
         <div class="col-auto">
@@ -180,6 +181,59 @@
         </table>
       </div>
     </div>
+
+    <!-- 單一活動各系所參與人數 -->
+    <div class="tab-pane fade" id="pane-department-count" role="tabpanel" aria-labelledby="tab-department-count">
+      <form class="row g-3 mb-3" method="get" action="{{ url_for('analysis_new.dashboard') }}">
+        <div class="col-auto">
+          <label for="aSeq" class="col-form-label">活動編號</label>
+        </div>
+        <div class="col-auto">
+          <input type="text" class="form-control" id="aSeq" name="aSeq" placeholder="例如：A001" value="{{ aSeq }}">
+        </div>
+        <div class="col-auto">
+          <button type="submit" class="btn btn-primary">查詢</button>
+        </div>
+        {% if aSeq %}
+        <div class="col-12">
+          <span class="badge bg-secondary">目前查詢活動：{{ aSeq }}</span>
+        </div>
+        {% endif %}
+      </form>
+
+      <!-- 圖表 -->
+      <center>
+        <div id="chart-department" class="container-fluid" style="height: 500px;"></div>
+      </center>
+
+      <!-- 表格 -->
+      <div class="table-responsive mt-3">
+        <table class="table table-bordered">
+          <thead class="table-light">
+            <tr>
+              <th>活動編號</th>
+              <th>活動名稱</th>
+              <th>系所</th>
+              <th>人數</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in department_count %}
+            <tr>
+              <td>{{ r.活動編號 }}</td>
+              <td>{{ r.活動名稱 }}</td>
+              <td>{{ r.系所 }}</td>
+              <td>{{ r.人數 }}</td>
+            </tr>
+            {% endfor %}
+            {% if department_count|length == 0 %}
+            <tr><td colspan="4" class="text-center text-muted">尚未查詢或無資料</td></tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -277,6 +331,72 @@
       window.history.replaceState({}, '', cleanUrl);
     }
   }
+
+  // ======== 圖 3：單一活動各系所參與人數 ========
+  const deptRows = JSON.parse('{{ department_count | tojson | safe }}');   // 後端傳入
+  const deptLabels = deptRows.map(r => r['系所']);
+  const deptCounts = deptRows.map(r => Number(r['人數'] || 0));
+
+  const chartDomc = document.getElementById('chart-department');
+  const myChartc = echarts.init(chartDomc);
+
+  const optionc = {
+    title: { text: '單一活動各系所參與人數' },
+    tooltip: { trigger: 'axis' },
+    xAxis: {
+      type: 'category',
+      data: deptLabels,
+      axisLabel: {
+        interval: 0,
+        rotate: 30,
+        hideOverlap: true,
+        formatter: (val) => (val.length > 10 ? val.slice(0, 10) + '…' : val)
+      }
+    },
+    yAxis: { type: 'value', name: '人數', minInterval: 1 },
+    series: [{
+      name: '人數',
+      type: 'bar',
+      data: deptCounts,
+      label: { show: true, position: 'top' }
+    }],
+    grid: { left: 50, right: 30, bottom: 80, top: 60 }
+  };
+
+  optionc && myChartc.setOption(optionc);
+
+  // 讓切換分頁時自動重繪三張圖
+  const tabEls2 = document.querySelectorAll('button[data-bs-toggle="tab"]');
+  tabEls2.forEach(el => {
+    el.addEventListener('shown.bs.tab', () => {
+      myCharta.resize();
+      myChartb.resize();
+      myChartc.resize();
+    });
+  });
+
+  // 監聽視窗縮放
+  window.addEventListener('resize', () => {
+    myCharta.resize();
+    myChartb.resize();
+    myChartc.resize();
+  });
+
+  // 如果 URL 帶有 aSeq，就自動切到「單一活動各系所參與人數」分頁
+  const currentASeq = "{{ aSeq }}";
+  if (currentASeq && currentASeq.trim() !== "") {
+    const tabDeptTrigger = document.querySelector('#tab-department-count');
+    if (tabDeptTrigger) {
+      const tab = new bootstrap.Tab(tabDeptTrigger);
+      tab.show();
+    }
+    // 清理 URL（避免重新整理又觸發）
+    if (window.history.replaceState) {
+      const cleanUrl = window.location.pathname;
+      window.history.replaceState({}, '', cleanUrl);
+    }
+  }
+
 </script>
 
 {% endblock content %}
