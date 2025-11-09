@@ -1,0 +1,137 @@
+{% extends "backstage.html" %}
+{% block head %}
+{{ super() }}
+{% endblock head %}
+
+{% block title %} 表演名單 {% endblock title %}
+
+{% block content %}
+
+{# ---- Flash Messages ---- #}
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    {% for msg in messages %}
+      {% if msg == 'No permission' %}
+        <script>alert('您沒有使用者的權限喔！');</script>
+      {% elif msg == 'failed' %}
+        <script>alert('有使用者有使用到這筆資料，所以不能刪除');</script>
+      {% elif msg == 'failed with UniqueViolation' %}
+        <script>alert('該學生已在此活動名單中。');</script>
+      {% elif msg == 'failed with ForeignKeyViolation' %}
+        <script>alert('該學生不存在於 Student 表中。');</script>
+      {% else %}
+        <div class="alert alert-info" role="alert">{{ msg }}</div>
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<script>
+  $(document).ready(function(){
+    $("#keyword").on("keyup", function() {
+      var value = $(this).val().toLowerCase();
+      $("#perform_data tr").filter(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+      });
+    });
+  });
+</script>
+&nbsp;
+&nbsp;
+<div class="d-flex justify-content-between container-xxl my-2">
+  <div class="d-flex col-sm-6">
+    <span class="input-group-text" id="basic-addon1">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+           fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+      </svg>
+    </span>
+    <input class="form-control me-2" id="keyword" placeholder="搜尋表演學生" aria-label="Search">
+  </div>
+
+  <div>
+    <span class="me-2 align-middle">
+      活動編號：<strong>{{ aSeq }}</strong>
+      表演時間：<strong>{{ programTime }}</strong>
+    </span>
+    <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#addPerformModal">
+      新增表演學生
+    </button>
+  </div>
+</div>
+
+<form method="post" action="{{ url_for('manager_new.add_perform') }}">
+  <div class="modal fade" id="addPerformModal" data-bs-backdrop="static" data-bs-keyboard="false"
+       tabindex="-1" aria-labelledby="addPerformLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addPerformLabel">新增表演學生</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="關閉"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" name="aSeq" value="{{ aSeq }}">
+          <input type="hidden" name="programTime" value="{{ programTime }}">
+          <div class="mb-3">
+            <label class="form-label">活動編號</label>
+            <input type="text" class="form-control" value="{{ aSeq }}" readonly>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">表演時間</label>
+            <input type="text" class="form-control" value="{{ programTime }}" readonly>
+          </div>          
+          <div class="mb-3">
+            <label for="inputStudentID" class="form-label">學生學號</label>
+            <input type="text" class="form-control" id="inputStudentID" name="sId" required>
+            <div class="form-text">請輸入已存在於 Student 表中的學號（如 S001）。</div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">取消</button>
+          <button type="submit" class="btn btn-success">確定新增</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+<div class="container-xxl mt-3">
+  <form method="post" action="{{ url_for('manager_new.performManager') }}">
+    <input type="hidden" name="aSeq" value="{{ aSeq }}">
+    <input type="hidden" name="programTime" value="{{ programTime }}">
+    <table id="manager_new" class="table table-bordered">
+      <thead>
+        <tr>
+          <th width="20%"><center>表演學生學號</center></th>
+          <th width="30%"><center>表演學生姓名</center></th>
+          <th width="15%"><center>資料操作</center></th>
+        </tr>
+      </thead>
+      <tbody id="perform_data">
+        {% for i in perform_data %}
+          <tr>
+            <td><center>{{ i.表演學生學號 }}</center></td>
+            <td><center>{{ i.表演學生姓名 }}</center></td>
+            <td>
+              <center>
+                <button type="submit"
+                        name="delete"
+                        value="{{ i.表演學生學號 }}"
+                        onclick="return confirm('你確定要從本活動名單移除「{{ i.表演學生姓名 }}（{{ i.表演學生學號 }}）」嗎？')"
+                        class="btn btn-danger">
+                  移除
+                </button>
+              </center>
+            </td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="3"><center>目前尚無表演學生</center></td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </form>
+</div>
+
+{% endblock content %}

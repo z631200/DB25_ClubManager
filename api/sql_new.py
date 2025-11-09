@@ -314,15 +314,15 @@ class StudentJoin:
         sql = 'SELECT * FROM StudentJoin'
         return DB.fetchall(sql)
     
-    @staticmethod
-    def get_participate_activity_by_student(sId):
-        sql = '''
-            SELECT sj.sID, s.sName
-            FROM StudentJoin sj
-            JOIN Student s ON sj.sID = s.sID
-            WHERE sj.sID = %s
-        '''
-        return DB.fetchall(sql, (sId,))
+    # @staticmethod
+    # def get_participate_activity_by_student(sId):
+    #     sql = '''
+    #         SELECT sj.sID, s.sName
+    #         FROM StudentJoin sj
+    #         JOIN Student s ON sj.sID = s.sID
+    #         WHERE sj.sID = %s
+    #     '''
+    #     return DB.fetchall(sql, (sId,))
     
     @staticmethod
     def get_participate_activity_by_activity(aSeq):
@@ -369,33 +369,53 @@ class StudentJoin:
 class PerformProgram:
 
     @staticmethod
-    def get_all_perform_program():
-        sql = ''
+    def get_all_perform():
+        sql = 'SELECT * FROM Perform'
         return DB.fetchall(sql)
     
-    # def get_perform_program(ppid):
-    #     sql = ''
-    #     return DB.fetchall(sql)
+    # @staticmethod
+    # def get_perform_by_student(sId):
+    #     sql = '''
+    #         SELECT p.sID, s.sName
+    #         FROM Perform p
+    #         JOIN Student s ON p.sID = s.sID
+    #         WHERE p.sID = %s
+    #     '''
+    #     return DB.fetchall(sql, (sId,))
     
-    # def create_perform_program(input_data):
-    #     sql = ''
-    #     DB.execute_input(sql, (
-    #         input_data['field1'],
-    #         input_data['field2'],
-    #         input_data['field3']
-    #     ))
+    @staticmethod
+    def get_perform_by_programTime(aSeq, programTime):
+        sql = '''
+            SELECT p.sID, s.sName
+            FROM Perform p
+            JOIN Student s ON p.sID = s.sID
+            WHERE p.aSeq = %s AND p.programTime = %s
+        '''
+        return DB.fetchall(sql, (aSeq, programTime, ))
     
-    # def delete_perform_program(ppid):
-    #     sql = ''
-    #     DB.execute_input(sql, (ppid,))
+    @staticmethod   
+    def get_perform(sId, aSeq, programTime):
+        sql = '''
+            SELECT p.sID, s.sName
+            FROM Perform p
+            JOIN Student s ON p.sID = s.sID
+            WHERE p.sID = %s AND p.aSeq = %s AND p.programTime = %s
+        '''
+        return DB.fetchall(sql, (sId, aSeq, programTime))
+    
+    @staticmethod
+    def create_perform(input_data):
+        sql = 'INSERT INTO Perform (sId, aSeq, programTime) VALUES (%s, %s, %s)'
+        DB.execute_input(sql, (
+            input_data['sId'],
+            input_data['aSeq'],
+            input_data['programTime']
+        ))      
 
-    # def edit_perform_program(input_data):
-    #     sql = ''
-    #     DB.execute_input(sql, (
-    #         input_data['field1'],
-    #         input_data['field2'],
-    #         input_data['ppid']
-    #     ))
+    @staticmethod
+    def delete_perform(sId, aSeq, performTime):
+        sql = 'DELETE FROM Perform WHERE aSeq = %s AND sId = %s AND programTime = %s'
+        DB.execute_input(sql, (aSeq, sId, performTime))
 
 
 class UserEquipment:

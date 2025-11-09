@@ -97,6 +97,7 @@
       <th width="15%"><center>節目時間</center></th>
       <th width="25%"><center>曲目</center></th>
       <th colspan="2"><center>資料操作</center></th>
+      <th colspan="1"><center>查看表演者</center></th>
     </tr>
   </thead>
   <tbody id="program">
@@ -117,6 +118,13 @@
           <button type="submit" name="delete" value="{{ i.活動序號 }}|{{ i.節目時間 }}"
                   onclick="return confirm('你確定要刪除 {{ i.曲目 }} 嗎？')"
                   class="btn btn-danger">刪除節目</button>
+        </center>
+      </td>
+            <td>
+        <center>
+          <button type="submit" name="perform" value="{{ i.活動序號 }}|{{ i.節目時間 }}" class="btn btn-primary">
+            查看表演者
+          </button>
         </center>
       </td>
     </tr>

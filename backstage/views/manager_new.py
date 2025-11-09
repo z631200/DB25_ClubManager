@@ -385,6 +385,7 @@ def activityManager():
     
     elif 'view' in request.values:
         aSeq = request.values.get('view')
+        print(f"aSeq: {aSeq}")
         return redirect(url_for('manager_new.programManager', aSeq=aSeq))
 
     elif 'participant' in request.values:
@@ -500,7 +501,14 @@ def programManager():
         aSeq, programTime = composite_key.split('|', 1)
         return redirect(url_for('manager_new.edit_program', aSeq=aSeq, programTime=programTime))
 
-   
+    elif 'perform' in request.values:
+        composite_key = request.values.get('perform')
+        if composite_key is None:
+            flash('無法查看表演者，缺少必要的識別資訊。')
+            return redirect(url_for('manager_new.programManager', aSeq=aSeq))
+        aSeq, programTime = composite_key.split('|', 1)
+        return redirect(url_for('manager_new.performManager', aSeq=aSeq, programTime=programTime))
+
     program_data = program(aSeq)
     return render_template('programManager.html', program_data=program_data, aSeq=aSeq)
 
@@ -600,7 +608,7 @@ def activityJoinManager():
         return redirect(url_for('manager_new.activityJoinManager', aSeq=aSeq))
 
     participant_data = activityJoin(aSeq)
-    return render_template('activityJoinManager.html', participants=participant_data, aSeq=aSeq)
+    return render_template('activityJoinManager.html', participant_data=participant_data, aSeq=aSeq)
 
 def activityJoin(aSeq):
     activityJoin_row = StudentJoin.get_participate_activity_by_activity(aSeq)
@@ -650,3 +658,71 @@ def add_activityJoin():
         return redirect(url_for('manager_new.activityJoinManager', aSeq=aSeq))
 
     return render_template('activityJoinManager.html')
+
+# =================== Program Perform Management =====================
+@manager_new.route('/performManager', methods=['GET', 'POST'])
+def performManager():
+    print(f"\n{request.values}\n")
+    aSeq = request.values.get('aSeq')
+    programTime = request.values.get('programTime')
+    if not aSeq and not programTime:
+        flash('缺少活動編號與表演時間')
+        return redirect(url_for('manager_new.programManager'))
+    
+    if 'delete' in request.values:
+        sId = request.values.get('delete')
+        PerformProgram.delete_perform(sId, aSeq, programTime)
+        return redirect(url_for('manager_new.performManager', aSeq=aSeq, programTime=programTime))
+
+    perform_data = perform(aSeq, programTime)
+    return render_template('programPerformManager.html', perform_data=perform_data, aSeq=aSeq, programTime=programTime)
+
+def perform(aSeq, programTime):
+    perform_row = PerformProgram.get_perform_by_programTime(aSeq, programTime)
+    perform_data = []
+    for i in perform_row:
+        perform = {
+            '表演學生學號': i[0],
+            '表演學生姓名': i[1]
+        }
+        perform_data.append(perform)
+    return perform_data
+
+@manager_new.route('/add_perform', methods=['POST'])
+def add_perform():
+    if request.method == 'POST':
+        sId = request.values.get('sId')
+        aSeq = request.values.get('aSeq')
+        programTime = request.values.get('programTime')
+        
+        # validation, can be extended
+        if sId is None:
+            flash('所有欄位都是必填的，請確認輸入內容。')
+            return redirect(url_for('manager_new.performManager', aSeq=aSeq, programTime=programTime))
+        if len(sId) < 1:
+            flash('學生學號不可為空。')
+            return redirect(url_for('manager_new.performManager', aSeq=aSeq, programTime=programTime))
+
+        sId_existing = Student.get_student(sId)
+        print(f"check {sId_existing}")
+        if not sId_existing:
+            flash('failed with ForeignKeyViolation')
+            return redirect(url_for('manager_new.performManager', aSeq=aSeq, programTime=programTime))
+
+        existing = PerformProgram.get_perform(sId, aSeq, programTime)
+        print(f"check {existing}")
+        if existing:
+            flash('failed with UniqueViolation')
+            return redirect(url_for('manager_new.performManager', aSeq=aSeq, programTime=programTime))
+
+        PerformProgram.create_perform(
+            {
+                'sId' : sId,
+                'aSeq' : aSeq,
+                'programTime' : programTime
+            }
+        )
+
+        return redirect(url_for('manager_new.performManager', aSeq=aSeq, programTime=programTime))
+
+    return render_template('performManager.html')
