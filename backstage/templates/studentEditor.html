@@ -81,6 +81,7 @@
           <th>所屬後勤團隊</th>
           <td>
             <select class="form-control" name="logistic">
+              <option value="" {% if not student.lName %}selected{% endif %}>無所屬後勤</option>
               {% for logistic in logistic_data %}
                 <option value="{{ logistic[0] }}" {% if student.lName == logistic[0] %}selected{% endif %}>
                   {{ logistic[0] }}

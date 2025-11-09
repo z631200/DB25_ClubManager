@@ -103,7 +103,7 @@
                     <div class="mb-3">
                         <label for="inputStudentLogistic" class="form-label">學生所屬後勤團隊</label>
                         <select id="inputStudentLogistic" class="form-select" name="logistic">
-                            <option selected disabled value="">請選擇後勤團隊</option>
+                            <option value="" {% if not student.lName %}selected{% endif %}>無所屬後勤</option>
                             {% for logistic in logistic_data %}
                                 <option value="{{ logistic[0] }}" {% if student.lName == logistic[0] %}selected{% endif %}>
                                     {{ logistic[0] }}
