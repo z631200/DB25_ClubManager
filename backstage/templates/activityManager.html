@@ -41,6 +41,49 @@
         });
     });
 </script>
+<script>
+    $(document).ready(function(){
+
+        function filterRows() {
+            var keyword = $("#keyword").val().toLowerCase();
+            var start = $("#startDate").val(); // YYYY-MM-DD
+            var end = $("#endDate").val();     // YYYY-MM-DD
+
+            $("#activity tr").filter(function() {
+                var rowText = $(this).text().toLowerCase();
+                var dateText = $(this).find("td:nth-child(3)").text().trim(); 
+                // 第 3 欄是「日期」欄，如果欄位順序有改，這裡要一起改
+
+                // 關鍵字是否符合
+                var matchKeyword = rowText.indexOf(keyword) > -1;
+
+                // 日期是否在區間內（若沒選日期就當成通過）
+                var matchDate = true;
+                if (start || end) {
+                    var dateVal = dateText; // 假設是 YYYY-MM-DD
+                    if (start && dateVal < start) matchDate = false;
+                    if (end && dateVal > end) matchDate = false;
+                }
+
+                $(this).toggle(matchKeyword && matchDate);
+            });
+        }
+
+        // 原本關鍵字即時搜尋
+        $("#keyword").on("keyup", function() {
+            filterRows();
+        });
+
+        // 點按鈕才用日期篩選
+        $("#filterDateBtn").on("click", function() {
+            filterRows();
+        });
+
+        // 如果想改成選日期就自動篩選，也可以加這行：
+        // $("#startDate, #endDate").on("change", filterRows);
+    });
+</script>
+
 &nbsp;
 &nbsp;
 <div class="d-flex justify-content-between container-xxl">
@@ -52,6 +95,24 @@
         </span>
         <input class="form-control me-2" id="keyword" placeholder="搜尋活動" aria-label="Search">
     </div>
+    
+    <div class="d-flex align-items-center">
+        <div class="input-group me-2" style="width: auto;">
+            <span class="input-group-text">起始日期</span>
+            <input type="date" class="form-control" id="startDate">
+        </div>
+
+        <div class="input-group me-2" style="width: auto;">
+            <span class="input-group-text">結束日期</span>
+            <input type="date" class="form-control" id="endDate">
+        </div>
+
+        <button type="button" class="btn btn-outline-primary" id="filterDateBtn">
+            時間篩選
+        </button>
+    </div>
+
+
     <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
         新增活動
     </button>
